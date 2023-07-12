@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Tengella.Survey.Data.Models.Survey>
+@{
+    ViewData["Title"] = "Surveys";
+}
+
+<table class="table table-bordered table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th>
+                name
+            </th>
+            <th>
+                description
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var obj in Model)
+        {
+            <tr>
+                <td width="50%">
+                    @obj.Name
+                </td>
+                <td width="50%">
+                    @obj.info
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
