@@ -8,6 +8,8 @@ public class SurveyDbContext : DbContext
     {
     }
     public DbSet<Models.Survey> Surveys { get; set; }
+    public DbSet<Models.Question> Questions { get; set; }
+    public DbSet<Models.Answer> Answers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -15,8 +17,21 @@ public class SurveyDbContext : DbContext
         modelBuilder.Entity<Models.Survey>().HasData(new Models.Survey
         {
             Id = 1,
+            Name = "survey name"
+        });
+        // Seeding a Question
+        /*modelBuilder.Entity<Models.Survey>().HasData(new Models.Survey
+        {
+            Id = 1,
             Name = "survey name",
             info = "this is a survey"
         });
+        // Seeding an Answer
+        modelBuilder.Entity<Models.Survey>().HasData(new Models.Survey
+        {
+            Id = 1,
+            Name = "survey name",
+            info = "this is a survey"
+        });*/
     }
 }

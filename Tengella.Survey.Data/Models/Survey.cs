@@ -13,9 +13,7 @@ namespace Tengella.Survey.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        public string Name { get; set; } = string.Empty;
-        public string info { get; set; } = string.Empty;
+        public string Name { get; set; }
 
         // Navigation Property
         //public ICollection<OrderDetail> OrderDetails { get; set; }

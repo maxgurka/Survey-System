@@ -21,10 +21,20 @@ namespace Tengella.Survey.WebApp.Controllers
             return View();
         }
 
+        //GET
         public IActionResult Create()
         {
             //TODO: Create new survey
             return View();
+        }
+        //POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Data.Models.Survey obj)
+        {
+            _surveyDbcontext.Add(obj);
+            _surveyDbcontext.SaveChanges();
+            return RedirectToAction("List");
         }
 
         public IActionResult List()
