@@ -1,6 +1,6 @@
-﻿@model Tengella.Survey.Data.Models.Survey
-
-
+﻿
+@using Tengella.Survey.WebApp.Views.Survey
+@model Tengella.Survey.Data.Models.Survey
 
 <!DOCTYPE html>
 <html>
@@ -33,31 +33,38 @@
                 });
             };
 
+            var createAnswerTextField = function () {
+                var textFieldHtml = '<div class="textField">';
+                textFieldHtml += '<input type="text" name="textFieldSet" placeholder="Enter value">';
+                textFieldHtml += '<button class="removeButton">Remove</button>';
+                textFieldHtml += '</div>';
+
+                return textFieldHtml;
+            }
+
             updateInitialButtonStates();
 
+            //Q&A set
             $('#addTextFieldSet').click(function () {
                 var textFieldSetHtml = '<div class="textFieldSet">';
-                textFieldSetHtml += '<input type="text" class="headline" value="">';
+                textFieldSetHtml += '<input type="text" name="SetHeader" class="headline" value="">';
 
                 for (var i = 0; i < minFields; i++) {
-                    textFieldSetHtml += '<div class="textField">';
-                    textFieldSetHtml += '<input type="text" name="textFieldSet" placeholder="Enter value">';
-                    textFieldSetHtml += '<button class="removeButton">Remove</button>';
-                    textFieldSetHtml += '</div>';
+                    textFieldSetHtml += createAnswerTextField();
                 }
 
-                textFieldSetHtml += '<button class="addButton">Add</button>';
-                textFieldSetHtml += '<button class="removeTextFieldSetButton">Remove Text Field Set</button>';
+                textFieldSetHtml += '<button class="addButton" type="button">Add</button>';
+                textFieldSetHtml += '<button class="removeTextFieldSetButton type="button"">Remove Text Field Set</button>';
                 textFieldSetHtml += '</div>';
 
                 $('#textFieldContainer').append(textFieldSetHtml);
                 updateButtonStates();
             });
 
-            $('#addHeader').click(function () {
+            $('#addHeader').click(function () { //ADD FREE TEXT QUESTION
                 var headerHtml = '<div class="headerSet">';
                 headerHtml += '<input type="text" class="headline" value="">';
-                headerHtml += '<button class="removeHeaderButton">Remove Header</button>';
+                headerHtml += '<button class="removeHeaderButton" type="button">Remove Header</button>';
                 headerHtml += '</div>';
 
                 $('#textFieldContainer').append(headerHtml);
@@ -69,21 +76,18 @@
             });
 
             $('#textFieldContainer').on('click', '.addButton', function () {
-                var textFieldHtml = '<div class="textField">';
-                textFieldHtml += '<input type="text" name="textFieldSet" placeholder="Enter value">';
-                textFieldHtml += '<button class="removeButton">Remove</button>';
-                textFieldHtml += '</div>';
+                var textFieldHtml = createAnswerTextField();
 
                 $(this).before(textFieldHtml);
                 updateButtonStates();
             });
 
-            $('#textFieldContainer').on('click', '.removeTextFieldSetButton', function () {
+            $('#textFieldContainer').on('click', '.removeTextFieldSetButton', function () { //REMOVE TEXT FIELD
                 $(this).closest('.textFieldSet').remove();
                 updateButtonStates();
             });
 
-            $('#textFieldContainer').on('click', '.removeHeaderButton', function () {
+            $('#textFieldContainer').on('click', '.removeHeaderButton', function () { //REMOVE FREE TEXT QUESTION
                 $(this).closest('.headerSet').remove();
             });
         });
@@ -103,15 +107,16 @@
 </head>
 <body>
     <div>
-        <h2>Create Survey</h2>
-        <!-- Your survey-specific HTML content goes here -->
 
-        <div id="textFieldContainer">
-            <!-- Existing text field sets and headers will be appended here -->
-        </div>
-
-        <button id="addTextFieldSet">Add Text Field Set</button>
-        <button id="addHeader">Add Header</button>
+        <form method="post">
+            <div id="textFieldContainer">
+                <!-- Existing text field sets and headers will be appended here -->
+            </div>
+            <button id="addTextFieldSet" type="button">Add Text Field Set</button>
+            <button id="addHeader" type="button">Add Header</button>
+        <h2><input asp-for="Name" type="text" class="form-control" id="survName" value="surv">dff</h2>
+            <input id="submitSurvey" type="submit" value="SUBMIT NOW">
+        </form>
     </div>
 </body>
 </html>

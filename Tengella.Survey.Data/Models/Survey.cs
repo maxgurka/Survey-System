@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tengella.Survey.Data.Models
 
@@ -12,10 +14,8 @@ namespace Tengella.Survey.Data.Models
 
         [Key]
         public int Id { get; set; }
-
+        [BindProperty]
         public string Name { get; set; }
-
-        // Navigation Property
-        //public ICollection<OrderDetail> OrderDetails { get; set; }
+        public ICollection<Question> Questions{ get; set; }
     }
 }

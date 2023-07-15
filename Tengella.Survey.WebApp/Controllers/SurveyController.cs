@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Tengella.Survey.Data;
+using Tengella.Survey.WebApp.Views.Survey;
 using WebApp.Controllers;
 
 namespace Tengella.Survey.WebApp.Controllers
@@ -9,6 +11,9 @@ namespace Tengella.Survey.WebApp.Controllers
 
         private readonly ILogger<HomeController> _logger;
         private readonly SurveyDbContext _surveyDbcontext;
+
+        [BindProperty]
+        public Data.Models.Survey Survey { get; set; }
 
         public SurveyController(ILogger<HomeController> logger, SurveyDbContext surveyDbcontext)
         {
@@ -24,8 +29,13 @@ namespace Tengella.Survey.WebApp.Controllers
         //GET
         public IActionResult Create()
         {
-            //TODO: Create new survey
-            return View();
+            var data = _surveyDbcontext.Surveys
+                .Include(Q => Q.Questions)
+                .ThenInclude(A => A.Answers)
+                .FirstOrDefault();
+            return View(data);
+            /*var createModel = new CreateModel(_surveyDbcontext);
+            return View(createModel);*/
         }
         //POST
         [HttpPost]
