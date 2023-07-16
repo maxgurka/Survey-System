@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using Tengella.Survey.Data;
+using Tengella.Survey.Data.Models;
 using Tengella.Survey.WebApp.Views.Survey;
 using WebApp.Controllers;
 
@@ -34,22 +37,65 @@ namespace Tengella.Survey.WebApp.Controllers
                 .ThenInclude(A => A.Answers)
                 .FirstOrDefault();
             return View(data);
-            /*var createModel = new CreateModel(_surveyDbcontext);
-            return View(createModel);*/
         }
         //POST
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Data.Models.Survey obj)
+        public IActionResult Create([FromBody] JsonElement jsonData)
         {
-            _surveyDbcontext.Add(obj);
-            _surveyDbcontext.SaveChanges();
-            return RedirectToAction("List");
+            // Parse the JSON data and extract the required information
+            string surveyName = jsonData.GetProperty("name").GetString();
+
+            JsonElement questionArrayElement;
+            if (jsonData.TryGetProperty("questions", out questionArrayElement) && questionArrayElement.ValueKind == JsonValueKind.Array)
+            {
+                List<Question> questions = new List<Question>();
+
+                foreach (JsonElement questionElement in questionArrayElement.EnumerateArray())
+                {
+                    string questionName = questionElement.GetProperty("name").GetString();
+
+                    JsonElement answerArrayElement;
+                    if (questionElement.TryGetProperty("answers", out answerArrayElement) && answerArrayElement.ValueKind == JsonValueKind.Array)
+                    {
+                        List<Answer> answers = new List<Answer>();
+
+                        foreach (JsonElement answerElement in answerArrayElement.EnumerateArray())
+                        {
+                            string answerText = answerElement.GetProperty("text").GetString();
+
+                            Answer answer = new Answer { AnswerText = answerText };
+                            answers.Add(answer);
+                        }
+
+                        Question question = new Question
+                        {
+                            QuestionText = questionName,
+                            Answers = answers
+                        };
+
+                        questions.Add(question);
+                    }
+                }
+
+                // Create the Survey object and save it to the database
+                Data.Models.Survey survey = new Data.Models.Survey
+                {
+                    Name = surveyName,
+                    Questions = questions
+                };
+
+                _surveyDbcontext.Add(survey);
+                _surveyDbcontext.SaveChanges();
+
+                return RedirectToAction("List");
+            }
+            return null;
         }
 
         public IActionResult List()
         {
-            IEnumerable<Data.Models.Survey> surveyList = _surveyDbcontext.Surveys.Where(c => c.Id == 1).ToList();
+            IEnumerable<Data.Models.Survey> surveyList = _surveyDbcontext.Surveys.ToList();
+            //IEnumerable<Data.Models.Survey> surveyList = _surveyDbcontext.Surveys.Where(c => c.Id == 1).ToList(); TODO: sortera på rätt användare
             return View(surveyList);
         }
     }

@@ -10,8 +10,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            var minFields = 2;
-            var maxFields = 10;
+            var minFields = 2;; // Minimum number of answers allowed to a question
+            var maxFields = 10; // Maximum number of answers allowed to a question
 
             var updateButtonStates = function () {
                 $('.textFieldSet').each(function () {
@@ -41,6 +41,76 @@
 
                 return textFieldHtml;
             }
+
+            // Function to serialize the form data as a JSON object
+            function serializeFormData() {
+                var surveyName = $('#survName').val();
+
+                var questions = [];
+
+                $('.textFieldSet').each(function () {
+                    var questionName = $(this).find('.headline').val();
+
+                    var answers = [];
+
+                    $(this).find('.textField input').each(function () {
+                        var answerText = $(this).val();
+                        answers.push({ text: answerText });
+                    });
+
+                    questions.push({
+                        name: questionName,
+                        answers: answers
+                    });
+                });
+
+                return JSON.stringify({
+                    name: surveyName,
+                    questions: questions
+                });
+            }
+
+            // Handle form submission
+            $('#submitSurvey').click(async function postJSON() {
+                try {
+                    const response = await fetch("Create", {
+                        method: "POST", // or 'PUT'
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: serializeFormData(),
+                        //body: JSON.stringify("test"),
+                    });
+                    const result = await response;
+                    console.log(response.body);
+                    console.log("Success:", result);
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+            });
+
+            /*/ Handle form submission
+            $('#submitSurvey').click(function (e) {
+                e.preventDefault();
+
+                var jsonData = serializeFormData();
+                console.log(jsonData);
+                $.ajax({
+                    url: "", // This page
+                    type: "POST",
+                    data: jsonData,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        // Handle the response from the server if needed
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        // Handle any errors that occur during the AJAX request
+                        console.error(error);
+                    }
+                });
+            });*/
 
             updateInitialButtonStates();
 
@@ -108,15 +178,15 @@
 <body>
     <div>
 
-        <form method="post">
+        <!--<form method="post">-->
             <div id="textFieldContainer">
                 <!-- Existing text field sets and headers will be appended here -->
             </div>
             <button id="addTextFieldSet" type="button">Add Text Field Set</button>
             <button id="addHeader" type="button">Add Header</button>
-        <h2><input asp-for="Name" type="text" class="form-control" id="survName" value="surv">dff</h2>
-            <input id="submitSurvey" type="submit" value="SUBMIT NOW">
-        </form>
+        <h2><input type="text" class="form-control" id="survName" value="surv"></h2>
+            <input id="submitSurvey" type="button" value="SUBMIT NOW">
+        <!--</form>-->
     </div>
 </body>
 </html>
