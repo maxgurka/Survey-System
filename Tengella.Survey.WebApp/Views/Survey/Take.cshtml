@@ -1,0 +1,26 @@
+﻿@model Tengella.Survey.Data.Models.Survey
+@using Tengella.Survey.Data.Models;
+@{
+	ViewData["Title"] = "Take Survey";
+}
+
+
+<h1>@Model.Name</h1>
+
+@foreach (var question in Model.Questions)
+{
+	<h3>@question.QuestionText</h3>
+	<ul>
+		@foreach (var answer in question.Answers)
+		{
+			<li>
+				<label>
+					<input type="radio" name="question-@question.Id" value="@answer.Id">
+					@answer.AnswerText
+				</label>
+			</li>
+		}
+	</ul>
+}
+
+<button type="submit">Submit</button>

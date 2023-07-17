@@ -16,7 +16,7 @@
         {
             <tr>
                 <td width="50%">
-                    @obj.Name
+                    <a href="@Url.Action("Take", "Survey", new { id = obj.Id })">@obj.Name</a>
                 </td>
             </tr>
         }
