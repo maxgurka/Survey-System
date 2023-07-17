@@ -98,5 +98,21 @@ namespace Tengella.Survey.WebApp.Controllers
             //IEnumerable<Data.Models.Survey> surveyList = _surveyDbcontext.Surveys.Where(c => c.Id == 1).ToList(); TODO: sortera på rätt användare
             return View(surveyList);
         }
+
+        public IActionResult Take(int? id)
+        {
+            /*Data.Models.Survey survey = _surveyDbcontext.Surveys.Where(c => c.Id == id).First()
+                .Include(Q => Q.Questions)
+                .ThenInclude(A => A.Answers)
+                .FirstOrDefault();
+            return View(survey);*/
+
+            Data.Models.Survey survey = _surveyDbcontext.Surveys
+            .Include(s => s.Questions)
+            .ThenInclude(q => q.Answers)
+            .FirstOrDefault(c => c.Id == id);
+
+            return View(survey);
+        }
     }
 }
