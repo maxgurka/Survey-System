@@ -19,12 +19,24 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: #fbfefb;
+    background-color: #F2EDEB;
+}
+
+.navbar {
+    background-color: #B1A7A4;
 }
 
 .question-container {
-    background-color: #ffffff;
+    background-color: #FFFAF9;
     border-radius: 0.25rem;
     box-shadow: 0 10px 10px rgb(239, 239, 239);
-    padding: 25px;
+    padding-right: 25px;
+    padding-left: 25px;
+    padding-bottom: 1px;
+    padding-top: 15px;
+    margin: 15px;
+}
+
+.question-text {
+    font-size: 10px;
 }
