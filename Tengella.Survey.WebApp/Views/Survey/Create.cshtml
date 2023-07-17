@@ -12,7 +12,7 @@
             var maxFields = 10; // Maximum number of answers allowed to a question
 
             var updateButtonStates = function () {
-                $('.textFieldSet').each(function () {
+                $('.question').each(function () {
                     var textFieldCount = $(this).find('.textField').length;
                     var addButton = $(this).find('.addButton');
                     var removeButtons = $(this).find('.removeButton');
@@ -23,7 +23,7 @@
             };
 
             var updateInitialButtonStates = function () {
-                $('.textFieldSet').each(function () {
+                $('.question').each(function () {
                     var textFieldCount = $(this).find('.textField').length;
                     var removeButtons = $(this).find('.removeButton');
 
@@ -33,7 +33,7 @@
 
             var createAnswerTextField = function () {
                 var textFieldHtml = '<div class="textField">';
-                textFieldHtml += '<input type="text" name="textFieldSet" placeholder="Enter value">';
+                textFieldHtml += '<input type="text" name="question" placeholder="Enter value">';
                 textFieldHtml += '<button class="removeButton">Remove</button>';
                 textFieldHtml += '</div>';
 
@@ -46,7 +46,7 @@
 
                 var questions = [];
 
-                $('.textFieldSet').each(function () {
+                $('.question').each(function () {
                     var questionName = $(this).find('.headline').val();
 
                     var answers = [];
@@ -72,12 +72,11 @@
             $('#submitSurvey').click(async function postJSON() {
                 try {
                     const response = await fetch("Create", {
-                        method: "POST", // or 'PUT'
+                        method: "POST",
                         headers: {
                             "Content-Type": "application/json",
                         },
                         body: serializeFormData(),
-                        //body: JSON.stringify("test"),
                     });
                     const result = await response;
                     console.log(response.body);
@@ -87,50 +86,27 @@
                 }
             });
 
-            /*/ Handle form submission
-            $('#submitSurvey').click(function (e) {
-                e.preventDefault();
-
-                var jsonData = serializeFormData();
-                console.log(jsonData);
-                $.ajax({
-                    url: "", // This page
-                    type: "POST",
-                    data: jsonData,
-                    dataType: "json",
-                    contentType: "application/json",
-                    success: function (response) {
-                        // Handle the response from the server if needed
-                        console.log(response);
-                    },
-                    error: function (error) {
-                        // Handle any errors that occur during the AJAX request
-                        console.error(error);
-                    }
-                });
-            });*/
-
             updateInitialButtonStates();
 
             //Q&A set
-            $('#addTextFieldSet').click(function () {
-                var textFieldSetHtml = '<div class="textFieldSet">';
-                textFieldSetHtml += '<input type="text" name="SetHeader" class="headline" value="">';
+            $('#addquestion').click(function () {
+                var questionHtml = '<div class="question">';
+                questionHtml += '<input type="text" name="SetHeader" class="headline" value="">';
 
                 for (var i = 0; i < minFields; i++) {
-                    textFieldSetHtml += createAnswerTextField();
+                    questionHtml += createAnswerTextField();
                 }
 
-                textFieldSetHtml += '<button class="addButton" type="button">Add</button>';
-                textFieldSetHtml += '<button class="removeTextFieldSetButton type="button"">Remove Text Field Set</button>';
-                textFieldSetHtml += '</div>';
+                questionHtml += '<button class="addButton" type="button">Add</button>';
+                questionHtml += '<button class="removequestionButton type="button"">Remove Text Field Set</button>';
+                questionHtml += '</div>';
 
-                $('#textFieldContainer').append(textFieldSetHtml);
+                $('#textFieldContainer').append(questionHtml);
                 updateButtonStates();
             });
 
             $('#addHeader').click(function () { //ADD FREE TEXT QUESTION
-                var headerHtml = '<div class="headerSet">';
+                var headerHtml = '<div class="question">';
                 headerHtml += '<input type="text" class="headline" value="">';
                 headerHtml += '<button class="removeHeaderButton" type="button">Remove Header</button>';
                 headerHtml += '</div>';
@@ -150,19 +126,19 @@
                 updateButtonStates();
             });
 
-            $('#textFieldContainer').on('click', '.removeTextFieldSetButton', function () { //REMOVE TEXT FIELD
-                $(this).closest('.textFieldSet').remove();
+            $('#textFieldContainer').on('click', '.removequestionButton', function () { //REMOVE TEXT FIELD
+                $(this).closest('.question').remove();
                 updateButtonStates();
             });
 
             $('#textFieldContainer').on('click', '.removeHeaderButton', function () { //REMOVE FREE TEXT QUESTION
-                $(this).closest('.headerSet').remove();
+                $(this).closest('.question').remove();
             });
         });
     </script>
     <style>
-        .textFieldSet,
-        .headerSet {
+        .question,
+        .question {
             margin-bottom: 10px;
             border: 1px solid #ccc;
             padding: 10px;
@@ -180,7 +156,7 @@
             <div id="textFieldContainer">
                 <!-- Existing text field sets and headers will be appended here -->
             </div>
-            <button id="addTextFieldSet" type="button">Add Text Field Set</button>
+            <button id="addquestion" type="button">Add Text Field Set</button>
             <button id="addHeader" type="button">Add Header</button>
         <h2><input type="text" class="form-control" id="survName" value="surv"></h2>
             <input id="submitSurvey" type="button" value="SUBMIT NOW">
