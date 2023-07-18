@@ -19,24 +19,39 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: #F2EDEB;
 }
 
-.navbar {
-    background-color: #B1A7A4;
-}
 
 .question-container {
-    background-color: #FFFAF9;
     border-radius: 0.25rem;
     box-shadow: 0 10px 10px rgb(239, 239, 239);
-    padding-right: 25px;
-    padding-left: 25px;
+    padding-right: 30px;
+    padding-left: 35px;
     padding-bottom: 1px;
-    padding-top: 15px;
-    margin: 15px;
+    padding-top: 20px;
+    margin-bottom: 15px;
 }
-
+.container-fluid {
+    max-width: 800px;
+}
 .question-text {
     font-size: 10px;
+}
+
+.background-theme-primary {
+    background-color: #F5EFE6;
+}
+.background-theme-secondary {
+    background-color: #FFFCF7;
+}
+.accent-theme-primary {
+    background-color: #AD936A;
+    color: #FFFCF7;
+}
+.accent-theme-secondary {
+    background-color: #1E87E6;
+    color: #FFFCF7;
+}
+.gray-extra {
+    background-color: #A3A5A6;
 }
