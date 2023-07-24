@@ -7,7 +7,7 @@ namespace Tengella.Survey.Data.Models
     {
         [Key]
         public int Id { get; set; }
-        public required string AnswerText { get; set; }
+        public required string Content { get; set; }
 
     }
 }

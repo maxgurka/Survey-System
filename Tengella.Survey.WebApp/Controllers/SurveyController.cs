@@ -4,7 +4,6 @@ using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using Tengella.Survey.Data;
 using Tengella.Survey.Data.Models;
-using Tengella.Survey.WebApp.Views.Survey;
 using WebApp.Controllers;
 
 namespace Tengella.Survey.WebApp.Controllers
@@ -42,8 +41,8 @@ namespace Tengella.Survey.WebApp.Controllers
 		[HttpPost]
 		public IActionResult Create([FromBody] JsonElement jsonData)
 		{
-			// Parse the JSON data and extract the required information
 			string surveyName = jsonData.GetProperty("name").GetString();
+			string surveyDescription = jsonData.GetProperty("description").GetString();
 
 			JsonElement questionArrayElement;
 			if (jsonData.TryGetProperty("questions", out questionArrayElement) && questionArrayElement.ValueKind == JsonValueKind.Array)
@@ -63,30 +62,30 @@ namespace Tengella.Survey.WebApp.Controllers
 						{
 							string answerText = answerElement.GetProperty("text").GetString();
 
-							Answer answer = new Answer { AnswerText = answerText };
+							Answer answer = new Answer { Content = answerText };
 							answers.Add(answer);
 						}
 
 					}
 					Question question = new Question
 					{
-						QuestionText = questionName,
+						Content = questionName,
 						Answers = answers
 					};
 					questions.Add(question);
 				}
 
-				// Create the Survey object and save it to the database
 				Data.Models.Survey survey = new Data.Models.Survey
 				{
 					Name = surveyName,
+					Description = surveyDescription,
 					Questions = questions
 				};
 
 				_surveyDbcontext.Add(survey);
 				_surveyDbcontext.SaveChanges();
 
-				return RedirectToAction("List");
+				return RedirectToAction("List", "Survey");
 			}
 			return null;
 		}
@@ -105,6 +104,48 @@ namespace Tengella.Survey.WebApp.Controllers
 			.FirstOrDefault(c => c.Id == id);
 
 			return View(survey);
+		}
+
+		[HttpPost]
+		public IActionResult Take([FromBody] JsonElement jsonData)
+		{
+
+			// Get the array of answers from the JSON data
+			List<Response> responses = new();
+
+			// Loop through each answer in the JSON array
+			foreach (JsonElement answerElement in jsonData.EnumerateArray())
+			{
+				// Get the question ID and content from each answer
+				string questionId = answerElement.GetProperty("questionId").ToString();
+				string content = answerElement.GetProperty("content").GetString();
+
+				// Create the Answer object and add it to the list of answers
+				Response response = new Response
+				{
+					QuestionId = Int32.Parse(questionId),
+					Content = content
+				};
+				responses.Add(response);
+			}
+
+			// Create the Respondent object and set its answers
+			Respondent respondent = new Respondent
+			{
+				Responses = responses
+			};
+
+			// Save the Respondent object to the database
+			_surveyDbcontext.Add(respondent);
+			_surveyDbcontext.SaveChanges();
+
+			return Redirect("ThankYou");
+
+		}
+
+		public IActionResult ThankYou()
+		{
+			return View();
 		}
 	}
 }

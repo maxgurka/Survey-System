@@ -1,165 +1,173 @@
-﻿
-@using Tengella.Survey.WebApp.Views.Survey
-@model Tengella.Survey.Data.Models.Survey
+﻿@model Tengella.Survey.Data.Models.Survey
 @{
-    ViewData["Title"] = "Create Survey";
+	ViewData["Title"] = "Create Survey";
 }
 <head>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            var minFields = 2;; // Minimum number of answers allowed to a question
-            var maxFields = 10; // Maximum number of answers allowed to a question
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			var minFields = 2;; // Minimum number of answers allowed to a question
+			var maxFields = 10; // Maximum number of answers allowed to a question
 
-            var updateButtonStates = function () {
-                $('.question').each(function () {
-                    var textFieldCount = $(this).find('.textField').length;
-                    var addButton = $(this).find('.addButton');
-                    var removeButtons = $(this).find('.removeButton');
+			var updateButtonStates = function () {
+				$('.question').each(function () {
+					var textFieldCount = $(this).find('.textField').length;
+					var addButton = $(this).find('.addButton');
+					var removeButtons = $(this).find('.removeButton');
 
-                    addButton.prop('disabled', textFieldCount >= maxFields);
-                    removeButtons.prop('disabled', textFieldCount <= minFields);
-                });
-            };
+					addButton.prop('disabled', textFieldCount >= maxFields);
+					removeButtons.prop('disabled', textFieldCount <= minFields);
+				});
+			};
 
-            var updateInitialButtonStates = function () {
-                $('.question').each(function () {
-                    var textFieldCount = $(this).find('.textField').length;
-                    var removeButtons = $(this).find('.removeButton');
+			var updateInitialButtonStates = function () {
+				$('.question').each(function () {
+					var textFieldCount = $(this).find('.textField').length;
+					var removeButtons = $(this).find('.removeButton');
 
-                    removeButtons.prop('disabled', textFieldCount <= minFields);
-                });
-            };
+					removeButtons.prop('disabled', textFieldCount <= minFields);
+				});
+			};
 
-            var createAnswerTextField = function () {
-                var textFieldHtml = '<div class="textField">';
-                textFieldHtml += '<input type="text" name="question" placeholder="Enter value">';
-                textFieldHtml += '<button class="removeButton">Remove</button>';
-                textFieldHtml += '</div>';
+			var createAnswerTextField = function () {
+				var textFieldHtml = '<div class="textField">';
+				textFieldHtml += '<input type="text" name="question" placeholder="Enter value">';
+				textFieldHtml += '<button class="removeButton">Remove</button>';
+				textFieldHtml += '</div>';
 
-                return textFieldHtml;
-            }
+				return textFieldHtml;
+			}
 
-            // Function to serialize the form data as a JSON object
-            function serializeFormData() {
-                var surveyName = $('#survName').val();
+			// Function to serialize the form data as a JSON object
+			function serializeFormData() {
+				console.log("creating...");
+				var surveyName = $('#survName').val();
+				var surveyDescription = $('#survDescription').val();
 
-                var questions = [];
+				var questions = [];
 
-                $('.question').each(function () {
-                    var questionName = $(this).find('.headline').val();
+				$('.question').each(function () {
+					var questionName = $(this).find('.headline').val();
 
-                    var answers = [];
+					var answers = [];
 
-                    $(this).find('.textField input').each(function () {
-                        var answerText = $(this).val();
-                        answers.push({ text: answerText });
-                    });
+					$(this).find('.textField input').each(function () {
+						var answerText = $(this).val();
+						answers.push({ text: answerText });
+					});
 
-                    questions.push({
-                        name: questionName,
-                        answers: answers
-                    });
-                });
+					questions.push({
+						name: questionName,
+						answers: answers
+					});
+				});
 
-                return JSON.stringify({
-                    name: surveyName,
-                    questions: questions
-                });
-            }
+				return JSON.stringify({
+					name: surveyName,
+					description: surveyDescription,
+					questions: questions
+				});
+			}
 
-            // Handle form submission
-            $('#submitSurvey').click(async function postJSON() {
-                try {
-                    const response = await fetch("Create", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: serializeFormData(),
-                    });
-                    const result = await response;
-                    console.log(response.body);
-                    console.log("Success:", result);
-                } catch (error) {
-                    console.error("Error:", error);
-                }
-            });
+			// Handle form submission
+			$('#submitSurvey').click(async function postJSON() {
+				try {
+					const response = await fetch("Create", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: serializeFormData(),
+					});
+					if(response.ok){
+						const result = await response;
+						window.location.href = "/Survey/List";
+						console.log(response.body);
+						console.log("Success:", result);
+					}
+					else {
+						// Handle errors when the response status is not ok
+						console.error("Error:", response.statusText);
+					}
+				} catch (error) {
+					// Handle other errors
+					console.error("Error:", error);
+				}
+			});
 
-            updateInitialButtonStates();
+			updateInitialButtonStates();
 
-            //Q&A set
-            $('#addquestion').click(function () {
-                var questionHtml = '<div class="question">';
-                questionHtml += '<input type="text" name="SetHeader" class="headline" value="">';
+			//Q&A set
+			$('#addquestion').click(function () {
+				var questionHtml = '<div class="question">';
+				questionHtml += '<input type="text" name="SetHeader" class="headline" value="">';
 
-                for (var i = 0; i < minFields; i++) {
-                    questionHtml += createAnswerTextField();
-                }
+				for (var i = 0; i < minFields; i++) {
+					questionHtml += createAnswerTextField();
+				}
 
-                questionHtml += '<button class="addButton" type="button">Add</button>';
-                questionHtml += '<button class="removequestionButton type="button"">Remove Text Field Set</button>';
-                questionHtml += '</div>';
+				questionHtml += '<button class="addButton" type="button">Add</button>';
+				questionHtml += '<button class="removequestionButton type="button"">Remove Text Field Set</button>';
+				questionHtml += '</div>';
 
-                $('#textFieldContainer').append(questionHtml);
-                updateButtonStates();
-            });
+				$('#textFieldContainer').append(questionHtml);
+				updateButtonStates();
+			});
 
-            $('#addHeader').click(function () { //ADD FREE TEXT QUESTION
-                var headerHtml = '<div class="question">';
-                headerHtml += '<input type="text" class="headline" value="">';
-                headerHtml += '<button class="removeHeaderButton" type="button">Remove Header</button>';
-                headerHtml += '</div>';
+			$('#addHeader').click(function () { //ADD FREE TEXT QUESTION
+				var headerHtml = '<div class="question">';
+				headerHtml += '<input type="text" class="headline" value="">';
+				headerHtml += '<button class="removeHeaderButton" type="button">Remove Header</button>';
+				headerHtml += '</div>';
 
-                $('#textFieldContainer').append(headerHtml);
-            });
+				$('#textFieldContainer').append(headerHtml);
+			});
 
-            $('#textFieldContainer').on('click', '.removeButton', function () {
-                $(this).closest('.textField').remove();
-                updateButtonStates();
-            });
+			$('#textFieldContainer').on('click', '.removeButton', function () {
+				$(this).closest('.textField').remove();
+				updateButtonStates();
+			});
 
-            $('#textFieldContainer').on('click', '.addButton', function () {
-                var textFieldHtml = createAnswerTextField();
+			$('#textFieldContainer').on('click', '.addButton', function () {
+				var textFieldHtml = createAnswerTextField();
 
-                $(this).before(textFieldHtml);
-                updateButtonStates();
-            });
+				$(this).before(textFieldHtml);
+				updateButtonStates();
+			});
 
-            $('#textFieldContainer').on('click', '.removequestionButton', function () { //REMOVE TEXT FIELD
-                $(this).closest('.question').remove();
-                updateButtonStates();
-            });
+			$('#textFieldContainer').on('click', '.removequestionButton', function () { //REMOVE TEXT FIELD
+				$(this).closest('.question').remove();
+				updateButtonStates();
+			});
 
-            $('#textFieldContainer').on('click', '.removeHeaderButton', function () { //REMOVE FREE TEXT QUESTION
-                $(this).closest('.question').remove();
-            });
-        });
-    </script>
-    <style>
-        .question,
-        .question {
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
+			$('#textFieldContainer').on('click', '.removeHeaderButton', function () { //REMOVE FREE TEXT QUESTION
+				$(this).closest('.question').remove();
+			});
+		});
+	</script>
+		<style>
+			.question,
+			.question {
+				margin-bottom: 10px;
+				border: 1px solid #ccc;
+				padding: 10px;
+			}
 
-        .textField {
-            margin-bottom: 5px;
-        }
-    </style>
+			.textField {
+				margin-bottom: 5px;
+			}
+		</style>
 </head>
 <body>
-    <div>
+	<div>
 
-        <!--<form method="post">-->
-            <div id="textFieldContainer">
-                <!-- Existing text field sets and headers will be appended here -->
-            </div>
-            <button id="addquestion" type="button">Add Text Field Set</button>
-            <button id="addHeader" type="button">Add Header</button>
-        <h2><input type="text" class="form-control" id="survName" value="surv"></h2>
-            <input id="submitSurvey" type="button" value="SUBMIT NOW">
-        <!--</form>-->
-    </div>
+		<div id="textFieldContainer">
+			<!-- Existing text field sets and headers will be appended here -->
+		</div>
+		<button id="addquestion" type="button">Add Text Field Set</button>
+		<button id="addHeader" type="button">Add Header</button>
+		<h2><input type="text" class="form-control" id="survName" value="surv"></h2>
+		<h2><input type="text" class="form-control" id="survDescription" value="desc"></h2>
+		<input id="submitSurvey" type="button" value="Submit">
+	</div>
 </body>
