@@ -147,5 +147,15 @@ namespace Tengella.Survey.WebApp.Controllers
 		{
 			return View();
 		}
+
+		public IActionResult Info(int? id)
+		{
+			Data.Models.Survey survey = _surveyDbcontext.Surveys
+			.Include(s => s.Questions)
+			.ThenInclude(q => q.Answers)
+			.FirstOrDefault(c => c.Id == id); //TODO: skicka med relevant info och visa i Info.cshtml
+
+			return View(survey);
+		}
 	}
 }
