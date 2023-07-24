@@ -139,7 +139,7 @@ namespace Tengella.Survey.WebApp.Controllers
 			_surveyDbcontext.Add(respondent);
 			_surveyDbcontext.SaveChanges();
 
-			return Redirect("ThankYou");
+			return RedirectToAction("ThankYou", "Survey");
 
 		}
 
