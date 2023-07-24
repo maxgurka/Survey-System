@@ -3,12 +3,16 @@
     ViewData["Title"] = "Surveys";
 }
 <p><a asp-area="" asp-controller="Survey" asp-action="Create">New Survey</a></p>
-<table class="table table-bordered table-striped" style="width:100%">
+<p>
+    <a asp-area="" asp-controller="Survey" asp-action="Create">
+        <span class="bi-plus-square"></span>
+    </a>
+</p>
+<table class="table table-bordered background-theme-secondary" style="width:100%">
     <thead>
         <tr>
             <th>
-                name
-            </th>
+                My Surveys <i class="bi bi-plus-square"></i>
         </tr>
     </thead>
     <tbody>

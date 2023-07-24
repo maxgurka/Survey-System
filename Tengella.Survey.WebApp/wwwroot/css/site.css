@@ -24,7 +24,7 @@ body {
 
 .question-container {
     border-radius: 0.25rem;
-    box-shadow: 0 10px 10px rgb(239, 239, 239);
+    box-shadow: 5px 5px 17px rgba(0, 0, 0, 0.05);
     padding-right: 30px;
     padding-left: 35px;
     padding-bottom: 1px;
@@ -39,10 +39,12 @@ body {
 }
 
 .background-theme-primary {
-    background-color: #faf5f0;
+    background-color: #fffaf5;
 }
+
 .background-theme-secondary {
     background-color: #fffdfa;
+    border-color: #AD936A;
 }
 .accent-theme-primary {
     background-color: #AD936A;
