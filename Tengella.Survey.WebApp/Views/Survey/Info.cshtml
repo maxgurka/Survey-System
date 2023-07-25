@@ -1,5 +1,25 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using Tengella.Survey.Data.Models;
 @{
+
+	IEnumerable<Question> questions = ViewData["Questions"] as IEnumerable<Question>;
 }
+
+<table class="table table-bordered background-theme-secondary" style="width:100%">
+	<thead>
+		<tr>
+			<th>
+				Survey Questions
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (Question question in questions)
+		{
+			<tr>
+				<td width="50%">
+					@question.Content
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

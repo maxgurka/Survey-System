@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System.Text.Json;
@@ -142,20 +143,32 @@ namespace Tengella.Survey.WebApp.Controllers
 			return RedirectToAction("ThankYou", "Survey");
 
 		}
-
+		
 		public IActionResult ThankYou()
 		{
 			return View();
 		}
 
-		public IActionResult Info(int? id)
+		public IActionResult Info(int id)
 		{
-			Data.Models.Survey survey = _surveyDbcontext.Surveys
-			.Include(s => s.Questions)
-			.ThenInclude(q => q.Answers)
-			.FirstOrDefault(c => c.Id == id); //TODO: skicka med relevant info och visa i Info.cshtml
+			Data.Models.Survey? survey = _surveyDbcontext.Surveys
+				.Include(s => s.Questions)
+				.ThenInclude(p => p.Answers)
+				.FirstOrDefault(d => d.Id == id);
+			if (survey != null)
+			{
+				ViewData["Survey"] = survey; //TODO: Databasen ska uppdateras (migration). Se till att allt skapas rätt från början nu, respondents ska läggas till i existerande surverys. Skicka med rätt saker i denna metod
 
-			return View(survey);
+
+			}
+			else
+			{
+				// Handle the case where the survey with the given id is not found.
+				// You might want to redirect to an error page or display an appropriate message.
+			}
+
+
+			return View();
 		}
 	}
 }

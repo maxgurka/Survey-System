@@ -1,28 +1,29 @@
 ﻿@model IEnumerable<Tengella.Survey.Data.Models.Survey>
 @{
-    ViewData["Title"] = "Surveys";
+	ViewData["Title"] = "Surveys";
 }
 <p><a asp-area="" asp-controller="Survey" asp-action="Create">New Survey</a></p>
 <p>
-    <a asp-area="" asp-controller="Survey" asp-action="Create">
-        <span class="bi-plus-square"></span>
-    </a>
+	<a asp-area="" asp-controller="Survey" asp-action="Create">
+		<span class="bi-plus-square"></span>
+	</a>
 </p>
 <table class="table table-bordered background-theme-secondary" style="width:100%">
-    <thead>
-        <tr>
-            <th>
-                My Surveys <i class="bi bi-plus-square"></i>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(var obj in Model)
-        {
-            <tr>
-                <td width="50%">
-                    <a href="@Url.Action("Take", "Survey", new { id = obj.Id })">@obj.Name</a>
-                </td>
-            </tr>
-        }
-    </tbody>
+	<thead>
+		<tr>
+			<th>
+				My Surveys <i class="bi bi-plus-square"></i>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var obj in Model)
+		{
+			<tr>
+				<td width="50%">
+					<a href="@Url.Action("Info", "Survey", new { id = obj.Id })">@obj.Name</a>
+				</td>
+			</tr>
+		}
+	</tbody>
 </table>

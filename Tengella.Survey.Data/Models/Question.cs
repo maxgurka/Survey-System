@@ -10,5 +10,5 @@ namespace Tengella.Survey.Data.Models
         public required string Content { get; set; }
         public required ICollection<Answer> Answers { get; set; }
 
-    }
+	}
 }
