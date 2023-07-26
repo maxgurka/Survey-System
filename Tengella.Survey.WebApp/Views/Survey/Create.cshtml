@@ -8,6 +8,7 @@
 			var minFields = 2;; // Minimum number of answers allowed to a question
 			var maxFields = 10; // Maximum number of answers allowed to a question
 
+			// Disable/enable buttons depending on the amount of answer-fields created
 			var updateButtonStates = function () {
 				$('.question').each(function () {
 					var textFieldCount = $(this).find('.textField').length;
@@ -19,15 +20,7 @@
 				});
 			};
 
-			var updateInitialButtonStates = function () {
-				$('.question').each(function () {
-					var textFieldCount = $(this).find('.textField').length;
-					var removeButtons = $(this).find('.removeButton');
-
-					removeButtons.prop('disabled', textFieldCount <= minFields);
-				});
-			};
-
+			// Creates and returns a textfield (and a remove-button) for adding a new answer alternative 
 			var createAnswerTextField = function () {
 				var textFieldHtml = '<div class="textField">';
 				textFieldHtml += '<input type="text" name="question" placeholder="Enter value">';
@@ -41,7 +34,6 @@
 			function serializeFormData() {
 				var surveyName = $('#survName').val();
 				var surveyDescription = $('#survDescription').val();
-
 				var questions = [];
 
 				$('.question').each(function () {
@@ -93,7 +85,7 @@
 				}
 			});
 
-			updateInitialButtonStates();
+			updateButtonStates();
 
 			//Q&A set
 			$('#addquestion').click(function () {
@@ -158,12 +150,13 @@
 
 	<div>
 
+	<h2><input type="text" class="form-control" id="survName" placeholder="Survey Name"></h2>
+		<h2><input type="text" class="form-control" id="survDescription" placeholder="Description (not visible to survey respondents)"></h2>
 		<div id="textFieldContainer">
-			<!-- Existing text field sets and headers will be appended here -->
+			<!-- Text field sets and headers will be appended here -->
 		</div>
-		<button id="addquestion" type="button">Add Text Field Set</button>
-		<button id="addHeader" type="button">Add Header</button>
-		<h2><input type="text" class="form-control" id="survName" value="surv"></h2>
-		<h2><input type="text" class="form-control" id="survDescription" value="desc"></h2>
+
+		<button id="addquestion" type="button">Add multiple choice question</button>
+		<button id="addHeader" type="button">Add Question</button>
 		<input id="submitSurvey" type="button" value="Submit">
 	</div>
