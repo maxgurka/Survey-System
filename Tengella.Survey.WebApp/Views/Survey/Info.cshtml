@@ -1,25 +1,38 @@
 ﻿@using Tengella.Survey.Data.Models;
-@{
+@using System.Text.RegularExpressions;
+@model Survey
 
-	IEnumerable<Question> questions = ViewData["Questions"] as IEnumerable<Question>;
-}
-
+<h1>@Model.Name</h1>
+<h2>@Model.Description</h2>
+<h2>Number of respondents: @Model.Respondents.Count</h2>
+<a href="@Url.Action("Take", "Survey", new { id = Model.Id })">Link to survey</a>
 <table class="table table-bordered background-theme-secondary" style="width:100%">
-	<thead>
-		<tr>
-			<th>
-				Survey Questions
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (Question question in questions)
-		{
-			<tr>
-				<td width="50%">
-					@question.Content
-				</td>
-			</tr>
-		}
-	</tbody>
+    <thead>
+        <tr>
+            <th>Question</th>
+            @foreach (var respondent in Model.Respondents)
+            {
+                <th>Responder @respondent.Id</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var question in Model.Questions)
+        {
+            <tr>
+                <td>@question.Content</td>
+                @foreach (var respondent in Model.Respondents)
+                {
+                    string response = respondent.Responses.FirstOrDefault(r => r.QuestionId == question.Id).Content;
+
+                    //Replace with question text if content is an id
+                    if (Regex.IsMatch(response, @"^[0-9]+$"))
+                    {
+                        response = question.Answers.Single(a => a.Id == int.Parse(response)).Content;
+                    }
+                    <td>@(response != null ? response : "-")</td>
+                }
+            </tr>
+        }
+    </tbody>
 </table>

@@ -1,7 +1,5 @@
-﻿using AspNetCore;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using Tengella.Survey.Data;
 using Tengella.Survey.Data.Models;
@@ -99,10 +97,10 @@ namespace Tengella.Survey.WebApp.Controllers
 
 		public IActionResult Take(int? id)
 		{
-			Data.Models.Survey survey = _surveyDbcontext.Surveys
+			Data.Models.Survey? survey = _surveyDbcontext.Surveys
 			.Include(s => s.Questions)
 			.ThenInclude(q => q.Answers)
-			.FirstOrDefault(c => c.Id == id);
+			.Single(s => s.Id == id);
 
 			return View(survey);
 		}
@@ -110,18 +108,24 @@ namespace Tengella.Survey.WebApp.Controllers
 		[HttpPost]
 		public IActionResult Take([FromBody] JsonElement jsonData)
 		{
+			// Get the survey ID
+			int surveyId = -1;
+			if (jsonData.TryGetProperty("surveyId", out JsonElement id))
+				surveyId = id.GetInt32();
 
-			// Get the array of answers from the JSON data
+			// Get the responses
+			JsonElement questionArrayElement;
+			jsonData.TryGetProperty("answers", out questionArrayElement);
+
+			//TODO: Felhantering
+
+			// Get response data and add new Response-objects to a list
 			List<Response> responses = new();
-
-			// Loop through each answer in the JSON array
-			foreach (JsonElement answerElement in jsonData.EnumerateArray())
+			foreach (JsonElement answerElement in questionArrayElement.EnumerateArray())
 			{
-				// Get the question ID and content from each answer
 				string questionId = answerElement.GetProperty("questionId").ToString();
 				string content = answerElement.GetProperty("content").GetString();
 
-				// Create the Answer object and add it to the list of answers
 				Response response = new Response
 				{
 					QuestionId = Int32.Parse(questionId),
@@ -130,20 +134,20 @@ namespace Tengella.Survey.WebApp.Controllers
 				responses.Add(response);
 			}
 
-			// Create the Respondent object and set its answers
+			// Create the Respondent object
 			Respondent respondent = new Respondent
 			{
 				Responses = responses
 			};
 
-			// Save the Respondent object to the database
-			_surveyDbcontext.Add(respondent);
+			//Add to survey
+			Data.Models.Survey survey = _surveyDbcontext.Surveys.Include(s => s.Respondents).Single(s => s.Id == surveyId);
+			survey.Respondents.Add(respondent);
 			_surveyDbcontext.SaveChanges();
 
 			return RedirectToAction("ThankYou", "Survey");
-
 		}
-		
+
 		public IActionResult ThankYou()
 		{
 			return View();
@@ -152,12 +156,14 @@ namespace Tengella.Survey.WebApp.Controllers
 		public IActionResult Info(int id)
 		{
 			Data.Models.Survey? survey = _surveyDbcontext.Surveys
+				.Include(s => s.Respondents)
+				.ThenInclude(s => s.Responses)
 				.Include(s => s.Questions)
-				.ThenInclude(p => p.Answers)
-				.FirstOrDefault(d => d.Id == id);
+				.ThenInclude(q => q.Answers)
+				.Single(s => s.Id == id);
 			if (survey != null)
 			{
-				ViewData["Survey"] = survey; //TODO: Databasen ska uppdateras (migration). Se till att allt skapas rätt från början nu, respondents ska läggas till i existerande surverys. Skicka med rätt saker i denna metod
+				//ViewData["Survey"] = survey; //TODO: Databasen ska uppdateras (migration). Se till att allt skapas rätt från början nu, respondents ska läggas till i existerande surverys. Skicka med rätt saker i denna metod
 
 
 			}
@@ -168,7 +174,7 @@ namespace Tengella.Survey.WebApp.Controllers
 			}
 
 
-			return View();
+			return View(survey);
 		}
 	}
 }

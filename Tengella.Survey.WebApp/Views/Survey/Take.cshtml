@@ -9,6 +9,7 @@
 
 		// Function to serialize the form data as a JSON object
 		function serializeFormData() {
+
 			var answers = [];
 			$('.question-container').each(function () {
 				var answer = {};
@@ -40,7 +41,12 @@
 				}
 			});
 
-			return JSON.stringify(answers);
+			var jsonData = {
+				surveyId: @Model.Id,
+				answers: answers
+			};
+
+			return JSON.stringify(jsonData);
 		}
 
 		// Handle form submission
