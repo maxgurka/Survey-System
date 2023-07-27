@@ -50,7 +50,7 @@
 		}
 
 		// Handle form submission
-		$('#submitSurvey').click(async function postJSON() {
+		$('#submit-survey').click(async function postJSON() {
 			try {
 				const response = await fetch("Take", {
 					method: "POST",
@@ -84,7 +84,7 @@
 @foreach (var question in Model.Questions)
 {
 	<div class="question-container border background-theme-secondary">
-		<div class="mb-4">
+		<div>
 			<p class="lead"><strong>@question.Content</strong></p>
 			@if (question.Answers.Any())
 			{
@@ -102,12 +102,9 @@
 			}
 			else
 			{
-				<textarea class="form-control background-theme-secondary" name="@question.Id" rows="3"></textarea>
+				<textarea class="form-control background-theme-secondary mb-4" name="@question.Id" rows="3"></textarea>
 			}
 		</div>
 	</div>
 }
-
-<div class="mb-4">
-	<input id="submitSurvey" type="button" value="Submit">
-</div>
+<button id="submit-survey" type="button" class="btn accent-theme-secondary">Submit</button>

@@ -2,165 +2,34 @@
 @{
 	ViewData["Title"] = "Create Survey";
 }
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-	$(document).ready(function () {
-		var minFields = 2;; // Minimum number of answers allowed to a question
-		var maxFields = 10; // Maximum number of answers allowed to a question
-
-		// Disable/enable buttons depending on the amount of answer-fields created
-		var updateButtonStates = function () {
-			$('.question').each(function () {
-				var textFieldCount = $(this).find('.textField').length;
-				var addButton = $(this).find('.addButton');
-				var removeButtons = $(this).find('.removeButton');
-
-				addButton.prop('disabled', textFieldCount >= maxFields);
-				removeButtons.prop('disabled', textFieldCount <= minFields);
-			});
-		};
-
-		// Creates and returns a textfield (and a remove-button) for adding a new answer alternative
-		var createAnswerTextField = function () {
-			var textFieldHtml = '<div class="textField input-group">';
-			textFieldHtml += '<input type="text" name="question" class="headline form-control" placeholder="Alternative">';
-			textFieldHtml += '<button id="submitSurvey" type="button" class=" removeButton btn btn-sm accent-theme-secondary"><span class="bi-dash-square"></span></button>';
-			textFieldHtml += '</div>';
-
-			return textFieldHtml;
-		}
-
-		// Function to serialize the form data as a JSON object
-		function serializeFormData() {
-			var surveyName = $('#survName').val();
-			var surveyDescription = $('#survDescription').val();
-			var questions = [];
-
-			$('.question').each(function () {
-				var questionName = $(this).find('.headline').val();
-
-				var answers = [];
-
-				$(this).find('.textField input').each(function () {
-					var answerText = $(this).val();
-					answers.push({ text: answerText });
-				});
-
-				questions.push({
-					name: questionName,
-					answers: answers
-				});
-			});
-
-			return JSON.stringify({
-				name: surveyName,
-				description: surveyDescription,
-				questions: questions
-			});
-		}
-
-		// Handle form submission
-		$('#submitSurvey').click(async function postJSON() {
-			try {
-				const response = await fetch("Create", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: serializeFormData(),
-				});
-				if (response.ok) {
-					const result = await response;
-					window.location.href = response.url;
-					console.log(response.body);
-					console.log("Success:", result);
-				}
-				else {
-					// Handle errors when the response status is not ok
-					console.error("Error:", response.statusText);
-				}
-			} catch (error) {
-				// Handle other errors
-				console.error("Error:", error);
-			}
-		});
-
-		updateButtonStates();
-
-		//Q&A set
-		$('#addquestion').click(function () {
-			var questionHtml = '<div class="question">';
-			
-			questionHtml += '<input type="text" name="setHeader" class="headline form-control" placeholder="Question">';
-			questionHtml += '<button type="button" class="removequestionButton btn btn-sm accent-theme-secondary"><span class="bi-dash-square"></span></button>';
-
-			for (var i = 0; i < minFields; i++) {
-				questionHtml += createAnswerTextField();
-			}
-
-			questionHtml += '<button type="button" class="addButton btn btn-sm accent-theme-secondary"><span class="bi-plus-square"></span></button>';
-			questionHtml += '</div>';
-
-			$('#textFieldContainer').append(questionHtml);
-			updateButtonStates();
-		});
-
-		$('#addHeader').click(function () { //ADD FREE TEXT QUESTION
-			var headerHtml = '<div class="question input-group">';
-			headerHtml += '<input type="text" class="headline form-control" placeholder="Question">';
-			headerHtml += '<button type="button" class="removeHeaderButton btn btn-sm accent-theme-secondary"><span class="bi-dash-square"></span></button>';
-			headerHtml += '</div>';
-
-			$('#textFieldContainer').append(headerHtml);
-		});
-
-		$('#textFieldContainer').on('click', '.removeButton', function () {
-			$(this).closest('.textField').remove();
-			updateButtonStates();
-		});
-
-		$('#textFieldContainer').on('click', '.addButton', function () {
-			var textFieldHtml = createAnswerTextField();
-
-			$(this).before(textFieldHtml);
-			updateButtonStates();
-		});
-
-		$('#textFieldContainer').on('click', '.removequestionButton', function () { //REMOVE TEXT FIELD
-			$(this).closest('.question').remove();
-			updateButtonStates();
-		});
-
-		$('#textFieldContainer').on('click', '.removeHeaderButton', function () { //REMOVE FREE TEXT QUESTION
-			$(this).closest('.question').remove();
-		});
-	});
-</script>
-<style>
-	.question,
-	.question {
-		margin-bottom: 10px;
-		border: 1px solid #ccc;
-		padding: 10px;
-	}
-
-	.textField {
-		margin-bottom: 5px;
-	}
-</style>
-
+<link href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css"
+	  rel="stylesheet">
 <div>
-
-	<h2><input type="text" class="form-control" id="survName" placeholder="Survey Name"></h2>
-	<h2><input type="text" class="form-control" id="survDescription" placeholder="Description (not visible to survey respondents)"></h2>
-
-	<div id="textFieldContainer">
-		<!-- Text field sets and headers will be appended here -->
+	<div class="survey-creation-controls">
+		<div>
+			<button id="submit-survey" type="button" class="btn accent-theme-secondary">Submit</button>
+			<button id="preview" type="button" class="btn accent-theme-secondary">Preview</button>
+		</div>
+		<div id="end-date-container">
+			<p id="end-date-text" class="ml-3">Optional end date:</p>
+			<input type="date" id="date-picker" class="btn">
+		</div>
 	</div>
 
-	<button id="addquestion" type="button" class="btn accent-theme-secondary"><span class="bi-plus-square"></span> Multiple choice question</button>
-	<button id="addHeader" type="button" class="btn accent-theme-secondary"><span class="bi-plus-square"></span> Free-text question</button>
-	<button id="submitSurvey" type="button" class="btn accent-theme-secondary">Submit</button>
-	<button id="preview" type="button" class="btn accent-theme-secondary">Preview</button>
-	<input type="date" id="datepicker" class="btn">
+	<h2><input type="text" class="form-control mt-2" id="survey-name" placeholder="Survey Name"></h2>
+	<h2><input type="text" class="form-control" id="survey-desc" placeholder="Description (not visible to survey respondents)"></h2>
+
+	<div id="content-container">
+		<!-- Questions will be appended here -->
+	</div>
+
+	<button id="add-mc-question" type="button" class="btn accent-theme-secondary"><span class="bi-plus-square"></span> Multiple choice question</button>
+	<button id="add-question" type="button" class="btn accent-theme-secondary"><span class="bi-plus-square"></span> Free-text question</button>
 </div>
+
+
+@section Scripts{
+
+	<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+	<script src="~/js/Create.js"></script>
+}

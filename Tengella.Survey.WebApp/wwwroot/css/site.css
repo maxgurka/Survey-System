@@ -25,12 +25,34 @@ body {
 .question-container {
     border-radius: 0.25rem;
     box-shadow: 5px 5px 17px rgba(0, 0, 0, 0.05);
-    padding-right: 30px;
-    padding-left: 35px;
-    padding-bottom: 1px;
+    padding-right: 25px;
+    padding-left: 25px;
     padding-top: 20px;
     margin-bottom: 15px;
+    cursor: grab;
 }
+.question-container:active {
+    cursor: grabbing;
+}
+
+.survey-creation-controls {
+    display: flex;
+    justify-content: flex-start;
+    gap:10px;
+    align-items: flex-end;
+}
+
+
+#end-date-container {
+    display: flex;
+    margin-left: auto;
+    font-size: 12px;
+}
+
+#end-date-text {
+    align-self: flex-end;
+}
+
 .container-fluid {
     max-width: 800px;
 }
