@@ -5,6 +5,7 @@ $(function () {
 
     // Disable/enable buttons depending on the amount of answer-fields created
     function updateButtonStates() {
+        $('.form-control').removeClass('is-invalid');
         $('.question-container').each(function () {
             var textFieldCount = $(this).find('.answer').length;
             var addButton = $(this).find('.add-answer');
@@ -33,6 +34,53 @@ $(function () {
             </div>`;
     }
 
+    //Check the user input before submitting
+    function validateForm() {
+
+        valid = true;
+
+        // Reset previous styling on all fields
+        $('.form-control').removeClass('is-invalid');
+
+        // Check survey name and description
+        const surveyName = $('#survey-name');
+        const surveyDescription = $('#survey-desc');
+
+        if (!surveyName.val().trim()) {
+            surveyName.addClass('is-invalid');
+            valid = false;
+        }
+
+        if (!surveyDescription.val().trim()) {
+            surveyDescription.addClass('is-invalid');
+            valid = false;
+        }
+
+        // Check each question
+        $('.question-container').each(function () {
+            const questionName = $(this).find('.question-name');
+            const answers = $(this).find('.answer input');
+
+            // Check question name
+            if (!questionName.val().trim()) {
+                questionName.addClass('is-invalid');
+                valid = false;
+            }
+
+            // Check each answer
+            answers.each(function () {
+                const answer = $(this);
+
+                if (!answer.val().trim()) {
+                    answer.addClass('is-invalid');
+                    valid = false;
+                }
+            });
+        });
+
+        return valid;
+    }
+
     // Enable sorting on the question-container
     $("#content-container").sortable({
         axix: "y"
@@ -52,7 +100,6 @@ $(function () {
 
         $('.question-container').each(function () {
             var questionName = $(this).find('.question-name').val();
-
             var answers = [];
 
             $(this).find('.answer input').each(function () {
@@ -73,7 +120,14 @@ $(function () {
     }
 
     // Handle form submission
-    $('#submit-survey').click(async function postJSON() {
+    $('#submit-survey').click(async function () {
+
+
+        // Validate the form before submitting
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             const response = await fetch("Create", {
                 method: "POST",
@@ -96,6 +150,7 @@ $(function () {
             // Handle other errors
             console.error("Error:", error);
         }
+
     });
 
     // Add multiple-choice question
@@ -117,8 +172,8 @@ $(function () {
             <div class="question-container border background-theme-secondary question-drag-handle">
                 ${createQuestionTextField()}
             </div>`;
-
         $('#content-container').append(html);
+        updateButtonStates();
     });
 
     //Remove answer alternative
