@@ -2,37 +2,67 @@
 @using System.Text.RegularExpressions;
 @model Survey
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <h1>@Model.Name</h1>
 <h2>@Model.Description</h2>
 <h2>Number of respondents: @Model.Respondents.Count</h2>
 <a href="@Url.Action("Take", "Survey", new { id = Model.Id })">Link to survey</a>
-<table class="table table-bordered background-theme-secondary" style="width:100%">
-    <thead>
-        <tr>
-            <th>Question</th>
-            @foreach (var respondent in Model.Respondents)
-            {
-                <th>Responder @respondent.Id</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var question in Model.Questions)
-        {
-            <tr>
-                <td>@question.Content</td>
-                @foreach (var respondent in Model.Respondents)
-                {
-                    string response = respondent.Responses.FirstOrDefault(r => r.QuestionId == question.Id).Content;
 
-                    //Replace with question text if content is an id
-                    if (Regex.IsMatch(response, @"^[0-9]+$"))
-                    {
-                        response = question.Answers.Single(a => a.Id == int.Parse(response)).Content;
-                    }
-                    <td>@(response != null ? response : "-")</td>
+@foreach (var question in Model.Questions)
+{
+	<canvas id="chart_@question.Id" style="width: 100%; max-width: 700px;"></canvas>
+
+	// Getting the answer alternatives for this question
+	List<string> answerAlternatives = question.Answers.Select(answer => answer.Content).ToList();
+	string answerAlternativeArray = "[" + string.Join(",", answerAlternatives.Select(content => "\"" + content + "\"")) + "]";
+
+	// How many times was each alternative picked?
+
+	// Get all the unique answer IDs for the current question
+	var answerIds = question.Answers.Select(answer => answer.Id).ToList();
+
+	// Initialize an array to store the counts for each alternative
+	int[] counts = new int[answerIds.Count];
+
+	@foreach (var respondent in Model.Respondents)
+	{
+		int responseId = int.Parse(respondent.Responses.First(r => r.QuestionId == question.Id).Content);
+
+		// If the responseId exists in the answerIds list, increment the corresponding count
+		if (answerIds.Contains(responseId))
+		{
+			int index = answerIds.IndexOf(responseId);
+			counts[index]++;
+		}
+	}
+
+    <script>
+        new Chart("chart_@question.Id", {
+            type: "horizontalBar",
+            data: {
+                labels: @Html.Raw(@answerAlternativeArray),
+                datasets: [{
+                    backgroundColor: "green",
+                    data: @Json.Serialize(counts),
+                    barThickness: 40
+                }]
+            },
+            options: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: "@Html.Raw(@question.Content)",
+                    fontSize: 24
+                },
+                scales: {
+                    yAxes: [{
+                        display: true,
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
                 }
-            </tr>
-        }
-    </tbody>
-</table>
+            }
+        });
+    </script>
+}

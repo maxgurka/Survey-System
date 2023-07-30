@@ -112,16 +112,25 @@ $(function () {
             });
         });
 
-        return JSON.stringify({
+        var endDate = $('#date-picker').val(); // Get the date from the date picker
+
+        // Create the JSON object
+        var data = {
             name: surveyName,
             description: surveyDescription,
             questions: questions
-        });
+        };
+
+        // Add the end date to the JSON object if it exists
+        if (endDate) {
+            data.endDate = endDate;
+        }
+
+        return JSON.stringify(data);
     }
 
     // Handle form submission
     $('#submit-survey').click(async function () {
-
 
         // Validate the form before submitting
         if (!validateForm()) {
@@ -150,7 +159,6 @@ $(function () {
             // Handle other errors
             console.error("Error:", error);
         }
-
     });
 
     // Add multiple-choice question

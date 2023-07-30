@@ -43,7 +43,7 @@ namespace Tengella.Survey.WebApp.Controllers
 			string surveyName = jsonData.GetProperty("name").GetString();
 			string surveyDescription = jsonData.GetProperty("description").GetString();
 
-			JsonElement questionArrayElement;
+            JsonElement questionArrayElement;
 			if (jsonData.TryGetProperty("questions", out questionArrayElement) && questionArrayElement.ValueKind == JsonValueKind.Array)
 			{
 				List<Question> questions = new List<Question>();
@@ -81,6 +81,12 @@ namespace Tengella.Survey.WebApp.Controllers
 					Questions = questions
 				};
 
+                if(jsonData.TryGetProperty("endDate", out JsonElement endDate))
+				{
+
+					survey.EndDate = endDate.GetDateTime();
+				}
+
 				_surveyDbcontext.Add(survey);
 				_surveyDbcontext.SaveChanges();
 
@@ -91,7 +97,7 @@ namespace Tengella.Survey.WebApp.Controllers
 
 		public IActionResult List()
 		{
-			IEnumerable<Data.Models.Survey> surveyList = _surveyDbcontext.Surveys.ToList();
+			IEnumerable<Data.Models.Survey> surveyList = _surveyDbcontext.Surveys.Include(s => s.Respondents).ToList();
 			return View(surveyList);
 		}
 
@@ -102,7 +108,26 @@ namespace Tengella.Survey.WebApp.Controllers
 			.ThenInclude(q => q.Answers)
 			.Single(s => s.Id == id);
 
-			return View(survey);
+            if (survey.EndDate.HasValue)
+            {
+                DateTime today = DateTime.Today;
+
+                int compareResult = DateTime.Compare(today, survey.EndDate.Value);
+
+                if (compareResult > 0)
+                {
+					// Survey is no longer open
+					return null;
+                }
+                else if (compareResult <= 0)
+                {
+                   
+                }
+            }
+
+            return View(survey);
+
+            //TODO: Felhantering
 		}
 
 		[HttpPost]

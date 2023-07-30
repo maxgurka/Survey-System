@@ -3,16 +3,18 @@
 	ViewData["Title"] = "Surveys";
 }
 <p><a asp-area="" asp-controller="Survey" asp-action="Create">New Survey</a></p>
-<p>
-	<a asp-area="" asp-controller="Survey" asp-action="Create">
-		<span class="bi-plus-square"></span>
-	</a>
-</p>
+
 <table class="table table-bordered background-theme-secondary" style="width:100%">
 	<thead>
 		<tr>
 			<th>
-				My Surveys <i class="bi bi-plus-square"></i>
+				<a href="#" id="sortName">My Surveys</a>
+			</th>
+			<th>
+				<a href="#" id="sortRespondents">Respondents</a>
+			</th>
+			<th>
+				<a href="#" id="sortEndDate">End Date</a>
 			</th>
 		</tr>
 	</thead>
@@ -20,10 +22,71 @@
 		@foreach (var obj in Model)
 		{
 			<tr>
-				<td width="50%">
+				<td width="50%" data-toggle="tooltip" data-placement="top" title="@obj.Description">
 					<a href="@Url.Action("Info", "Survey", new { id = obj.Id })">@obj.Name</a>
+				</td>
+				<td>
+					@obj.Respondents.Count
+				</td>
+				<td>
+					END DATE
 				</td>
 			</tr>
 		}
 	</tbody>
 </table>
+
+@section Scripts{
+	<script>
+		// Enable Bootstrap tooltips
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip();
+		});
+
+		// Sorting functionality using jQuery
+		$(function () {
+			$("#sortName").on("click", function () {
+				sortTable(0);
+			});
+
+			$("#sortRespondents").on("click", function () {
+				sortTable(1, true);
+			});
+
+			$("#sortEndDate").on("click", function () {
+				sortTable(2);
+			});
+		});
+
+		function sortTable(columnIndex, numeric = false) {
+			var rows, switching, i, x, y, shouldSwitch;
+			var table = document.querySelector("table");
+			switching = true;
+
+			while (switching) {
+				switching = false;
+				rows = table.rows;
+				for (i = 1; i < (rows.length - 1); i++) {
+					shouldSwitch = false;
+					x = rows[i].getElementsByTagName("TD")[columnIndex];
+					y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+					if (numeric) {
+						if (parseInt(x.innerHTML) < parseInt(y.innerHTML)) {
+							shouldSwitch = true;
+							break;
+						}
+					} else {
+						if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+							shouldSwitch = true;
+							break;
+						}
+					}
+				}
+				if (shouldSwitch) {
+					rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+					switching = true;
+				}
+			}
+		}
+	</script>
+}
