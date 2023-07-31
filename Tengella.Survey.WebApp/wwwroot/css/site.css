@@ -78,3 +78,6 @@ body {
 .gray-extra {
     background-color: #A3A5A6;
 }
+.bg {
+    background-image: url(https://images.eclub.se/images/mio/assets/bg.jpg);
+}

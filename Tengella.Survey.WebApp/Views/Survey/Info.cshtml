@@ -10,59 +10,77 @@
 
 @foreach (var question in Model.Questions)
 {
-	<canvas id="chart_@question.Id" style="width: 100%; max-width: 700px;"></canvas>
+    <p class="lead mt-5"><strong>@question.Content</strong></p>
+    @if (question.Answers.Any())
+    {
+        // Determine the height of the chart based on the number of alternatives
+        string chartHeight = 100 + question.Answers.Count * 55 + "px";
+        <canvas id="chart_@question.Id" style="width: 100%; height: @chartHeight;"></canvas>
+        
+	    // Getting the answer alternatives for this question
+	    List<string> answerAlternatives = question.Answers.Select(answer => answer.Content).ToList();
+	    string answerAlternativeArray = "[" + string.Join(",", answerAlternatives.Select(content => "\"" + content + "\"")) + "]";
 
-	// Getting the answer alternatives for this question
-	List<string> answerAlternatives = question.Answers.Select(answer => answer.Content).ToList();
-	string answerAlternativeArray = "[" + string.Join(",", answerAlternatives.Select(content => "\"" + content + "\"")) + "]";
+	    // How many times was each alternative picked?
+	    var answerIds = question.Answers.Select(answer => answer.Id).ToList();
+	    int[] counts = new int[answerIds.Count];
 
-	// How many times was each alternative picked?
+	    @foreach (var respondent in Model.Respondents)
+	    {
+		    int responseId = int.Parse(respondent.Responses.First(r => r.QuestionId == question.Id).Content);
 
-	// Get all the unique answer IDs for the current question
-	var answerIds = question.Answers.Select(answer => answer.Id).ToList();
+		    if (answerIds.Contains(responseId))
+		    {
+			    int index = answerIds.IndexOf(responseId);
+			    counts[index]++;
+		    }
+	    }
 
-	// Initialize an array to store the counts for each alternative
-	int[] counts = new int[answerIds.Count];
-
-	@foreach (var respondent in Model.Respondents)
-	{
-		int responseId = int.Parse(respondent.Responses.First(r => r.QuestionId == question.Id).Content);
-
-		// If the responseId exists in the answerIds list, increment the corresponding count
-		if (answerIds.Contains(responseId))
-		{
-			int index = answerIds.IndexOf(responseId);
-			counts[index]++;
-		}
-	}
-
-    <script>
-        new Chart("chart_@question.Id", {
-            type: "horizontalBar",
-            data: {
-                labels: @Html.Raw(@answerAlternativeArray),
-                datasets: [{
-                    backgroundColor: "green",
-                    data: @Json.Serialize(counts),
-                    barThickness: 40
-                }]
-            },
-            options: {
-                legend: { display: false },
-                title: {
-                    display: true,
-                    text: "@Html.Raw(@question.Content)",
-                    fontSize: 24
-                },
-                scales: {
-                    yAxes: [{
-                        display: true,
-                        ticks: {
-                            beginAtZero: true
-                        }
+        <script>
+            new Chart("chart_@question.Id", {
+                type: "horizontalBar",
+                data: {
+                    labels: @Html.Raw(@answerAlternativeArray),
+                    datasets: [{
+                        backgroundColor: '#1e87e680',
+                        data: @Json.Serialize(counts),
+                        barThickness: 50
                     }]
+                },
+                options: {
+                    legend: { display: false },
+                    scales: {
+                        xAxes: [{
+
+                            display: true,
+                            ticks: {
+                                beginAtZero: true,
+                                stepSize: 1,
+                                precision: 0
+                            },
+                            
+                        }],
+                        yAxes: [{
+                            afterFit: function (scaleInstance) {
+                                scaleInstance.width = 150; // sets the width to 100px
+                            }
+                        }]
+                    }
+                }
+            });
+        </script>
+    }
+    else
+    {
+        <ul>
+            @foreach (var respondent in Model.Respondents)
+            {
+                var response = respondent.Responses.FirstOrDefault(r => r.QuestionId == question.Id);
+                if (response != null)
+                {
+                    <li>@Html.DisplayFor(model => response.Content)</li>
                 }
             }
-        });
-    </script>
+        </ul>
+    }
 }
