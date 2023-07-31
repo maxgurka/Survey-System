@@ -1,4 +1,6 @@
-﻿new Chart("bar_" + passId, {
+﻿
+// Creates a bar chart. passLabels, passId, PassData, needs to be created in js beforehand. Also canvas with correct id
+new Chart("bar_" + passId, {
     type: "horizontalBar",
     data: {
         labels: passLabels,

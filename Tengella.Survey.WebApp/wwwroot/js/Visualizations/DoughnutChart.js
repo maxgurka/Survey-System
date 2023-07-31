@@ -1,8 +1,11 @@
-﻿new Chart("doughnut_" + passId, {
+﻿
+// Creates a doughnut chart. passLabels, passId, PassData, needs to be created in js beforehand. Also canvas with correct id
+new Chart("doughnut_" + passId, {
     type: "doughnut",
     data: {
         labels: passLabels,
         datasets: [{
+            // 10 colors, assuming no more than 10 categories will exist
             backgroundColor: [
                 '#1e87e680'
                 ,'#42f58180'
@@ -21,11 +24,5 @@
     options: {
         legend: { display: true },
         scales: { display: false },
-        yAxes: [{
-            // Set label width. Will keep the charts the same size but will truncate long labels
-            afterFit: function (scaleInstance) {
-                scaleInstance.height = 150;
-            }
-        }]
     }
 });

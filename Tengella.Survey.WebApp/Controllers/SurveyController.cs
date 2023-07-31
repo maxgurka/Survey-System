@@ -9,16 +9,10 @@ namespace Tengella.Survey.WebApp.Controllers
 {
 	public class SurveyController : Controller
 	{
-
-		private readonly ILogger<HomeController> _logger;
 		private readonly SurveyDbContext _surveyDbcontext;
 
-		[BindProperty]
-		public Data.Models.Survey Survey { get; set; }
-
-		public SurveyController(ILogger<HomeController> logger, SurveyDbContext surveyDbcontext)
+		public SurveyController(SurveyDbContext surveyDbcontext)
 		{
-			_logger = logger;
 			_surveyDbcontext = surveyDbcontext;
 		}
 
@@ -27,41 +21,38 @@ namespace Tengella.Survey.WebApp.Controllers
 			return View();
 		}
 
-		//GET
 		public IActionResult Create()
 		{
-			var data = _surveyDbcontext.Surveys
-				.Include(Q => Q.Questions)
-				.ThenInclude(A => A.Answers)
-				.FirstOrDefault();
-			return View(data);
+			return View();
 		}
-		//POST
+
+		// POST data from Survey Creation
 		[HttpPost]
 		public IActionResult Create([FromBody] JsonElement jsonData)
 		{
 			string surveyName = jsonData.GetProperty("name").GetString();
 			string surveyDescription = jsonData.GetProperty("description").GetString();
 
+			// Add all questions to list
             JsonElement questionArrayElement;
 			if (jsonData.TryGetProperty("questions", out questionArrayElement) && questionArrayElement.ValueKind == JsonValueKind.Array)
 			{
 				List<Question> questions = new List<Question>();
-
 				foreach (JsonElement questionElement in questionArrayElement.EnumerateArray())
 				{
 					string questionName = questionElement.GetProperty("name").GetString();
 
+					// Add all answers to list
 					List<Answer> answers = new List<Answer>();
 					JsonElement answerArrayElement;
 					if (questionElement.TryGetProperty("answers", out answerArrayElement) && answerArrayElement.ValueKind == JsonValueKind.Array)
 					{
-
 						foreach (JsonElement answerElement in answerArrayElement.EnumerateArray())
 						{
 							string answerText = answerElement.GetProperty("text").GetString();
-
-							Answer answer = new Answer { Content = answerText };
+							Answer answer = new Answer {
+								Content = answerText
+							};
 							answers.Add(answer);
 						}
 
@@ -74,6 +65,7 @@ namespace Tengella.Survey.WebApp.Controllers
 					questions.Add(question);
 				}
 
+				// Creating the survey
 				Data.Models.Survey survey = new Data.Models.Survey
 				{
 					Name = surveyName,
@@ -81,37 +73,41 @@ namespace Tengella.Survey.WebApp.Controllers
 					Questions = questions
 				};
 
+				// Checking for optional end-date
                 if(jsonData.TryGetProperty("endDate", out JsonElement endDate))
 				{
-
 					survey.EndDate = endDate.GetDateTime();
 				}
 
+				// Save to database
 				_surveyDbcontext.Add(survey);
 				_surveyDbcontext.SaveChanges();
 
-				return RedirectToAction("List", "Survey");
+				//Send the user to the List view when done
+				return RedirectToAction("List", "Survey"); //TODO: give the user feedback after creating survey
 			}
-			return null;
+			return null; //?
 		}
 
 		public IActionResult List()
 		{
+			// Pass all surveys to the view
 			IEnumerable<Data.Models.Survey> surveyList = _surveyDbcontext.Surveys.Include(s => s.Respondents).ToList();
 			return View(surveyList);
 		}
 
 		public IActionResult Take(int? id)
 		{
+			// Find survey with id
 			Data.Models.Survey? survey = _surveyDbcontext.Surveys
 			.Include(s => s.Questions)
 			.ThenInclude(q => q.Answers)
 			.Single(s => s.Id == id);
 
+			// Check for an end date in survey
             if (survey.EndDate.HasValue)
             {
                 DateTime today = DateTime.Today;
-
                 int compareResult = DateTime.Compare(today, survey.EndDate.Value);
 
                 if (compareResult > 0)
@@ -127,14 +123,15 @@ namespace Tengella.Survey.WebApp.Controllers
 
             return View(survey);
 
-            //TODO: Felhantering
+            //TODO: Felhantering o så
 		}
 
+		// Post data from Take survey view
 		[HttpPost]
 		public IActionResult Take([FromBody] JsonElement jsonData)
 		{
 			// Get the survey ID
-			int surveyId = -1;
+			int surveyId = -1; //
 			if (jsonData.TryGetProperty("surveyId", out JsonElement id))
 				surveyId = id.GetInt32();
 
@@ -178,24 +175,23 @@ namespace Tengella.Survey.WebApp.Controllers
 			return View();
 		}
 
+		// Info View
 		public IActionResult Info(int id)
 		{
+			// Include all information in the survey
 			Data.Models.Survey? survey = _surveyDbcontext.Surveys
 				.Include(s => s.Respondents)
 				.ThenInclude(s => s.Responses)
 				.Include(s => s.Questions)
 				.ThenInclude(q => q.Answers)
 				.Single(s => s.Id == id);
+
 			if (survey != null)
 			{
-				//ViewData["Survey"] = survey; //TODO: Databasen ska uppdateras (migration). Se till att allt skapas rätt från början nu, respondents ska läggas till i existerande surverys. Skicka med rätt saker i denna metod
-
-
 			}
 			else
 			{
-				// Handle the case where the survey with the given id is not found.
-				// You might want to redirect to an error page or display an appropriate message.
+				//TODO: felhantering när survey ej existerar
 			}
 
 

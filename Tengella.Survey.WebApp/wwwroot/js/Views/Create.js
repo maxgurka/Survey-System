@@ -112,7 +112,8 @@ $(function () {
             });
         });
 
-        var endDate = $('#date-picker').val(); // Get the date from the date picker
+        // Get the date from the date picker
+        var endDate = $('#date-picker').val();
 
         // Create the JSON object
         var data = {
@@ -152,7 +153,7 @@ $(function () {
                 console.log("Success:", result);
             }
             else {
-                // Handle errors when the response status is not ok
+                // TODO: Handle errors when the response status is not ok
                 console.error("Error:", response.statusText);
             }
         } catch (error) {

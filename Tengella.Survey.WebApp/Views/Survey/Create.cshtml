@@ -1,14 +1,13 @@
-﻿@model Tengella.Survey.Data.Models.Survey
-@{
+﻿@{
 	ViewData["Title"] = "Create Survey";
 }
-<link href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css"
-	  rel="stylesheet">
+
 <div>
+	<!-- Flexbox with submit, preview, and date-picker buttons -->
 	<div class="survey-creation-controls">
 		<div>
 			<button id="submit-survey" type="button" class="btn accent-theme-secondary">Submit</button>
-			<button id="preview" type="button" class="btn accent-theme-secondary">Preview</button>
+			<button id="preview" type="button" class="btn accent-theme-secondary">Preview (funkar inte än)</button>
 		</div>
 		<div id="end-date-container">
 			<p id="end-date-text" class="ml-3">Optional end date:</p>
@@ -16,6 +15,7 @@
 		</div>
 	</div>
 
+	<!-- Survey name and description fields -->
 	<h2><input type="text" class="form-control mt-2" id="survey-name" placeholder="Survey Name"></h2>
 	<h2><input type="text" class="form-control" id="survey-desc" placeholder="Description (not visible to survey respondents)"></h2>
 
@@ -23,12 +23,12 @@
 		<!-- Questions will be appended here -->
 	</div>
 
+	<!-- Buttons for adding questions -->
 	<button id="add-mc-question" type="button" class="btn accent-theme-secondary"><span class="bi-plus-square"></span> Multiple choice question</button>
 	<button id="add-question" type="button" class="btn accent-theme-secondary"><span class="bi-plus-square"></span> Free-text question</button>
 </div>
 
 @section Scripts{
-
 	<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-	<script src="~/js/Create.js"></script>
+	<script src="~/js/Views/Create.js"></script>
 }

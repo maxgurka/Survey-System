@@ -4,6 +4,7 @@
 }
 <p><a asp-area="" asp-controller="Survey" asp-action="Create">New Survey</a></p>
 
+<!-- TODO: styling mm på hela sidan -->
 <table class="table table-bordered background-theme-secondary" style="width:100%">
 	<thead>
 		<tr>
@@ -29,7 +30,15 @@
 					@obj.Respondents.Count
 				</td>
 				<td>
-					END DATE
+					@if(obj.EndDate.HasValue)
+					{
+						
+						@Html.ValueFor(m => obj.EndDate, "{0:dd/MM/yyyy}")
+					}
+					else
+					{
+						<p>-</p>
+					}
 				</td>
 			</tr>
 		}
@@ -38,6 +47,8 @@
 
 @section Scripts{
 	<script>
+		// TODO: fixa hela detta script (chatGPT test)
+
 		// Enable Bootstrap tooltips
 		$(function () {
 			$('[data-toggle="tooltip"]').tooltip();
