@@ -16,17 +16,18 @@ namespace Tengella.Survey.WebApp.Controllers
 			_surveyDbcontext = surveyDbcontext;
 		}
 
-		public IActionResult Index()
-		{
-			return View();
-		}
-
+		/// <summary>
+		/// View for survey creation
+		/// </summary>
 		public IActionResult Create()
 		{
 			return View();
 		}
 
-		// POST data from Survey Creation
+		/// <summary>
+		/// Data from survey creation will be sent here by POST.
+		/// </summary>
+		/// <param name="jsonData">Json-object containing survey name, description, questions, and optional end date. Questions optionally contains answer alternatives </param>
 		[HttpPost]
 		public IActionResult Create([FromBody] JsonElement jsonData)
 		{
@@ -89,6 +90,9 @@ namespace Tengella.Survey.WebApp.Controllers
 			return null; //?
 		}
 
+		/// <summary>
+		/// View for listing all surveys
+		/// </summary>
 		public IActionResult List()
 		{
 			// Pass all surveys to the view
@@ -96,6 +100,10 @@ namespace Tengella.Survey.WebApp.Controllers
 			return View(surveyList);
 		}
 
+		/// <summary>
+		/// Take survey view
+		/// </summary>
+		/// <param name="id">Id of survey</param>
 		public IActionResult Take(int? id)
 		{
 			// Find survey with id
@@ -123,10 +131,13 @@ namespace Tengella.Survey.WebApp.Controllers
 
             return View(survey);
 
-            //TODO: Felhantering o så
+            //TODO: Felhantering
 		}
 
-		// Post data from Take survey view
+		/// <summary>
+		/// Data from a survey (Survey/Take page) filled in by a respondent will be sent here by POST.
+		/// </summary>
+		/// <param name="jsonData">Json-object containing survey id and answers, each answer containing a question id and an answer string</param>
 		[HttpPost]
 		public IActionResult Take([FromBody] JsonElement jsonData)
 		{
@@ -170,12 +181,18 @@ namespace Tengella.Survey.WebApp.Controllers
 			return RedirectToAction("ThankYou", "Survey");
 		}
 
+		/// <summary>
+		/// "Thank You" view to be shown after respondent has completed a survey
+		/// </summary>
 		public IActionResult ThankYou()
 		{
 			return View();
 		}
 
-		// Info View
+		/// <summary>
+		/// Info view, shows information about a survey (for creators/admins, not to be seen by respondents)
+		/// </summary>
+		/// <param name="id">Id of the survey</param>
 		public IActionResult Info(int id)
 		{
 			// Include all information in the survey
