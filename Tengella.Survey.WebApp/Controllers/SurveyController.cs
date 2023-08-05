@@ -203,6 +203,8 @@ namespace Tengella.Survey.WebApp.Controllers
 				.ThenInclude(q => q.Answers)
 				.Single(s => s.Id == id);
 
+			ViewData["Recipients"] = _surveyDbcontext.Recipients;
+
 			if (survey != null)
 			{
 			}
@@ -213,6 +215,27 @@ namespace Tengella.Survey.WebApp.Controllers
 
 
 			return View(survey);
+		}
+
+		[HttpPost]
+		public IActionResult Info(string greeting, int[] recipientIds, string message)
+		{
+			// Get the selected recipients from the database based on the IDs
+			List<Recipient> selectedRecipients = new List<Recipient>();
+			foreach (int recipientId  in recipientIds)
+			{
+				Recipient recipient = (Recipient)_surveyDbcontext.Recipients.Single(r => r.Id == recipientId);
+				selectedRecipients.Add(recipient);
+			}
+			// Compose the email content for each recipient
+			foreach (var recipient in selectedRecipients)
+			{
+				string emailContent = $"{greeting} {recipient.Name},\n\n{message}";
+
+				// Send the email here using recipient.Email as th email
+			}
+
+			return Ok();
 		}
 	}
 }

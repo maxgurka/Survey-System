@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Tengella.Survey.Data.Models.Recipient>
+@{
+	ViewData["Title"] = "Recipients";
+}
+<p><a asp-area="" asp-controller="Recipient" asp-action="Create">New Recipient</a></p>
+
+<table class="table table-bordered background-theme-secondary" style="width:100%">
+	<thead>
+		<tr>
+			<th>
+				<a href="#" id="sortName">Recipient</a>
+			</th>
+			<th>
+				<a href="#" id="sortRespondents">Email</a>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var obj in Model)
+		{
+			<tr>
+				<td width="50%" data-toggle="tooltip" data-placement="top" title="@obj.Identifier">
+					<a href="@Url.Action("Info", "Recipient", new { id = obj.Id })">@obj.Name</a>
+				</td>
+				<td>
+					@obj.Email
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

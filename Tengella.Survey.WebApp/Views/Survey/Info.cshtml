@@ -1,12 +1,61 @@
 ﻿@using Tengella.Survey.Data.Models;
 @using System.Text.RegularExpressions;
 @model Survey
+@{
+	IEnumerable<Recipient> recipients = ViewData["Recipients"] as IEnumerable<Recipient>;
+}
+<head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</head>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
 <h1>@Model.Name</h1>
 <h2>@Model.Description</h2>
 <h2>Number of respondents: @Model.Respondents.Count</h2>
 <a href="@Url.Action("Take", "Survey", new { id = Model.Id })">Link to survey</a>
+
+<div class="container mb-5 mt-2">
+	<h2>
+		<button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm"
+				aria-expanded="false" aria-controls="collapseForm" id="collapseButton">
+			Send survey <i class="bi bi-chevron-down"></i>
+		</button>
+	</h2>
+	<div class="collapse" id="collapseForm">
+		<form asp-controller="Survey" asp-action="Info" method="post">
+			<div class="form-group">
+				<div class="input-group">
+					<input type="text" name="Greeting" class="form-control" placeholder="Hello" />
+					<div class="input-group-append">
+						<button class="btn btn-primary dropdown-toggle" type="button" id="recipientDropdown"
+								data-bs-toggle="dropdown" aria-expanded="false">
+							Select Recipients
+						</button>
+						<ul class="dropdown-menu" aria-labelledby="recipientDropdown">
+							@foreach (var recipient in recipients)
+							{
+								<li>
+									<a class="dropdown-item" href="#">
+										<div class="form-check">
+											<input class="form-check-input" type="checkbox" name="RecipientIds" value="@recipient.Id" />
+											<label class="form-check-label" for="RecipientIds">@recipient.Name</label>
+										</div>
+									</a>
+								</li>
+							}
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="form-group mt-2 mb-2">
+				<textarea name="Message" rows="5" class="form-control" placeholder="We value your opinion! Please take a moment to fill out our survey..."></textarea>
+			</div>
+			<button type="submit" class="btn btn-primary">Send Email</button>
+		</form>
+	</div>
+</div>
+
+
 
 @if (Model.Respondents.Count > 0)
 {
@@ -83,7 +132,6 @@ else
 }
 
 @section Scripts{
-
 	<script>
 		// Hides doughnut charts by default
 		const elements = $('[id^="' + "doughnut_" + '"]');
@@ -106,6 +154,11 @@ else
 		$('#toggle-charts').on('click', function () {
 			toggleElementsStartingWith('bar_');
 			toggleElementsStartingWith('doughnut_');
+		});
+
+		// Expand/Collapse the email-form
+		$("#collapseButton").on("click", function () {
+			$(this).find(".bi").toggleClass("bi-chevron-down bi-chevron-up");
 		});
 	</script>
 }

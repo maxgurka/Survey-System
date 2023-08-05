@@ -9,4 +9,5 @@ public class SurveyDbContext : DbContext
     public DbSet<Models.Answer> Answers { get; set; }
     public DbSet<Models.Respondent> Respondents { get; set; }
     public DbSet<Models.Response> Responses { get; set; }
+	public DbSet<Models.Recipient> Recipients { get; set; }
 }

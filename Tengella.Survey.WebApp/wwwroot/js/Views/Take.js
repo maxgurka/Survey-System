@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+﻿$(function () {
 
     // Function to serialize the form data as a JSON object
     function serializeFormData() {
