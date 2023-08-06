@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using Tengella.Survey.Data;
+using Tengella.Survey.Data.Migrations;
 using Tengella.Survey.Data.Models;
 using WebApp.Controllers;
 
@@ -35,7 +36,7 @@ namespace Tengella.Survey.WebApp.Controllers
 			string surveyDescription = jsonData.GetProperty("description").GetString();
 
 			// Add all questions to list
-            JsonElement questionArrayElement;
+			JsonElement questionArrayElement;
 			if (jsonData.TryGetProperty("questions", out questionArrayElement) && questionArrayElement.ValueKind == JsonValueKind.Array)
 			{
 				List<Question> questions = new List<Question>();
@@ -51,7 +52,8 @@ namespace Tengella.Survey.WebApp.Controllers
 						foreach (JsonElement answerElement in answerArrayElement.EnumerateArray())
 						{
 							string answerText = answerElement.GetProperty("text").GetString();
-							Answer answer = new Answer {
+							Answer answer = new Answer
+							{
 								Content = answerText
 							};
 							answers.Add(answer);
@@ -75,7 +77,7 @@ namespace Tengella.Survey.WebApp.Controllers
 				};
 
 				// Checking for optional end-date
-                if(jsonData.TryGetProperty("endDate", out JsonElement endDate))
+				if (jsonData.TryGetProperty("endDate", out JsonElement endDate))
 				{
 					survey.EndDate = endDate.GetDateTime();
 				}
@@ -113,25 +115,25 @@ namespace Tengella.Survey.WebApp.Controllers
 			.Single(s => s.Id == id);
 
 			// Check for an end date in survey
-            if (survey.EndDate.HasValue)
-            {
-                DateTime today = DateTime.Today;
-                int compareResult = DateTime.Compare(today, survey.EndDate.Value);
+			if (survey.EndDate.HasValue)
+			{
+				DateTime today = DateTime.Today;
+				int compareResult = DateTime.Compare(today, survey.EndDate.Value);
 
-                if (compareResult > 0)
-                {
+				if (compareResult > 0)
+				{
 					// Survey is no longer open
 					return null;
-                }
-                else if (compareResult <= 0)
-                {
-                   
-                }
-            }
+				}
+				else if (compareResult <= 0)
+				{
 
-            return View(survey);
+				}
+			}
 
-            //TODO: Felhantering
+			return View(survey);
+
+			//TODO: Felhantering
 		}
 
 		/// <summary>
@@ -218,24 +220,38 @@ namespace Tengella.Survey.WebApp.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Info(string greeting, int[] recipientIds, string message)
+		public IActionResult Info(string greeting, int[] recipientIds, string message, string submitType, string surveyLink)
 		{
-			// Get the selected recipients from the database based on the IDs
-			List<Recipient> selectedRecipients = new List<Recipient>();
-			foreach (int recipientId  in recipientIds)
-			{
-				Recipient recipient = (Recipient)_surveyDbcontext.Recipients.Single(r => r.Id == recipientId);
-				selectedRecipients.Add(recipient);
-			}
-			// Compose the email content for each recipient
-			foreach (var recipient in selectedRecipients)
-			{
-				string emailContent = $"{greeting} {recipient.Name},\n\n{message}";
 
-				// Send the email here using recipient.Email as th email
-			}
+			if (submitType == "send")
+			{
+				// Get the selected recipients from the database based on the IDs
+				List<Recipient> recipients = new List<Recipient>();
+				foreach (int recipientId in recipientIds)
+				{
+					Recipient recipient = _surveyDbcontext.Recipients.Single(r => r.Id == recipientId);
+					recipients.Add(recipient);
+				}
+				// Compose the email content for each recipient
+				foreach (var recipient in recipients)
+				{
+					string emailContent = $"{greeting} {recipient.Name},\n\n{message}";
 
-			return Ok();
+					// Send the email here using recipient.Email as th email
+				}
+				return Ok();
+			}
+			else if (submitType == "preview")
+			{
+				//Return a preview of the message to the first recipient in the list
+				Recipient recipient = _surveyDbcontext.Recipients.Single(r => r.Id == recipientIds[0]);
+				return Content($"{greeting} {recipient.Name},\n\n{message}\n\n{surveyLink}", "text/plain; charset=utf-8");
+
+			}
+			else
+			{
+				return BadRequest();
+			}
 		}
 	}
 }

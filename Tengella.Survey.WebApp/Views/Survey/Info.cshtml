@@ -4,33 +4,35 @@
 @{
 	IEnumerable<Recipient> recipients = ViewData["Recipients"] as IEnumerable<Recipient>;
 }
-<head>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 
 
 <h1>@Model.Name</h1>
 <h2>@Model.Description</h2>
 <h2>Number of respondents: @Model.Respondents.Count</h2>
-<a href="@Url.Action("Take", "Survey", new { id = Model.Id })">Link to survey</a>
 
-<div class="container mb-5 mt-2">
-	<h2>
-		<button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm"
-				aria-expanded="false" aria-controls="collapseForm" id="collapseButton">
-			Send survey <i class="bi bi-chevron-down"></i>
-		</button>
-	</h2>
-	<div class="collapse" id="collapseForm">
-		<form asp-controller="Survey" asp-action="Info" method="post">
+<!-- Send email form container -->
+<div class="container mb-2 mt-2">
+	<!-- Button for expanding/collapsing form -->
+	<button class="btn collapseButton" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm"
+			aria-expanded="false" aria-controls="collapseForm">
+		Send survey <i class="bi bi-chevron-down"></i>
+	</button>
+	<div class="collapse mt-2" id="collapseForm">
+		<!-- The form -->
+		<form asp-controller="Survey" asp-action="Info" method="post" target="_blank" accept-charset="UTF-8">
 			<div class="form-group">
 				<div class="input-group">
+					<!-- Input for greeting message -->
 					<input type="text" name="Greeting" class="form-control" placeholder="Hello" />
 					<div class="input-group-append">
+						<!-- Dropdown with checkboxes for selecting recipients -->
 						<button class="btn btn-primary dropdown-toggle" type="button" id="recipientDropdown"
 								data-bs-toggle="dropdown" aria-expanded="false">
 							Select Recipients
 						</button>
+						<!-- List of reciepients -->
 						<ul class="dropdown-menu" aria-labelledby="recipientDropdown">
 							@foreach (var recipient in recipients)
 							{
@@ -47,89 +49,108 @@
 					</div>
 				</div>
 			</div>
+			<!-- Email message input -->
 			<div class="form-group mt-2 mb-2">
-				<textarea name="Message" rows="5" class="form-control" placeholder="We value your opinion! Please take a moment to fill out our survey..."></textarea>
+				<textarea name="Message" rows="5" class="form-control" placeholder="Please take a moment to fill out our survey..."></textarea>
 			</div>
-			<button type="submit" class="btn btn-primary">Send Email</button>
+			<!-- Making sure the back end has access to the survey link -->
+			<input type="hidden" name="surveyLink" value="@($"{Context.Request.Scheme}://{Context.Request.Host}{Url.Action("Take", "Survey", new { id = Model.Id })}")" />
+			<!-- Submit and preview buttons, and link to survey -->
+			<div class="d-flex justify-content-between">
+				<div>
+					<button type="submit" class="btn btn-primary" name="submitType" value="preview">Send</button>
+					<button type="submit" class="btn btn-primary" name="submitType" value="preview">Preview</button>
+				</div>
+				<a href="@Url.Action("Take", "Survey", new { id = Model.Id })">Link to survey</a>
+			</div>
 		</form>
 	</div>
 </div>
 
 
-
-@if (Model.Respondents.Count > 0)
-{
-	<div class="form-check form-switch mb-3">
-		<input class="form-check-input" type="checkbox" id="toggle-charts">
-		<label class="form-check-label" for="toggle-charts">Chart type</label>
-	</div>
-
-	@foreach (var question in Model.Questions)
-	{
-		@if (question.Answers.Any())
+<!-- Statistics container -->
+<div class="container mb-2 mt-2">
+	<!-- Button for expanding/collapsing form -->
+	<button class="btn collapseButton" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStatistics"
+			aria-expanded="false" aria-controls="collapseStatistics">
+		View Statistics <i class="bi bi-chevron-down"></i>
+	</button>
+	<div class="collapse mt-2" id="collapseStatistics">
+		@if (Model.Respondents.Count > 0)
 		{
-			// Determine the height of the chart based on the number of alternatives
-			string chartHeight = 100 + question.Answers.Count * 55 + "px";
-
-			<div class="question-container border background-theme-secondary pb-4">
-				<p class="lead mt-1"><strong>@question.Content</strong></p>
-				<canvas id="bar_@question.Id" style="width: 100%; height: @chartHeight;"></canvas>
-				<canvas id="doughnut_@question.Id" style="width: 100%; height: 400px;"></canvas>
+			<div class="form-check form-switch mb-3">
+				<input class="form-check-input" type="checkbox" id="toggle-charts">
+				<label class="form-check-label" for="toggle-charts">Chart type</label>
 			</div>
 
-			// Getting the answer alternatives for this question
-			List<string> answerAlternatives = question.Answers.Select(answer => answer.Content).ToList();
-			string answerAlternativeArray = "[" + string.Join(",", answerAlternatives.Select(content => "\"" + content + "\"")) + "]";
-
-			// How many times was each alternative picked?
-			var answerIds = question.Answers.Select(answer => answer.Id).ToList();
-			int[] counts = new int[answerIds.Count];
-
-			@foreach (var respondent in Model.Respondents)
+			@foreach (var question in Model.Questions)
 			{
-				int responseId = int.Parse(respondent.Responses.First(r => r.QuestionId == question.Id).Content);
-
-				if (answerIds.Contains(responseId))
+				@if (question.Answers.Any())
 				{
-					int index = answerIds.IndexOf(responseId);
-					counts[index]++;
+					// Determine the height of the chart based on the number of alternatives
+					string chartHeight = 100 + question.Answers.Count * 55 + "px";
+
+					<div class="question-container border background-theme-secondary pb-4">
+						<p class="lead mt-1"><strong>@question.Content</strong></p>
+						<canvas id="bar_@question.Id" style="width: 100%; height: @chartHeight;"></canvas>
+						<canvas id="doughnut_@question.Id" style="width: 100%; height: 400px;"></canvas>
+					</div>
+
+					// Getting the answer alternatives for this question
+					List<string> answerAlternatives = question.Answers.Select(answer => answer.Content).ToList();
+					string answerAlternativeArray = "[" + string.Join(",", answerAlternatives.Select(content => "\"" + content + "\"")) + "]";
+
+					// How many times was each alternative picked?
+					var answerIds = question.Answers.Select(answer => answer.Id).ToList();
+					int[] counts = new int[answerIds.Count];
+
+					@foreach (var respondent in Model.Respondents)
+					{
+						int responseId = int.Parse(respondent.Responses.First(r => r.QuestionId == question.Id).Content);
+
+						if (answerIds.Contains(responseId))
+						{
+							int index = answerIds.IndexOf(responseId);
+							counts[index]++;
+						}
+					}
+
+					// Make sure the js files have access to the necessary data. Also put the canvas in the correct div
+					<script>
+						var passLabels = @Html.Raw(@answerAlternativeArray);
+						var passData = @Json.Serialize(counts);
+						var passId = @question.Id;
+					</script>
+
+					// Draw charts
+					<script src="~/js/Visualizations/BarChart.js"></script>
+					<script src="~/js/Visualizations/DoughnutChart.js"></script>
+				}
+				else
+				{
+					// Answers to free-text questions will just be placed in a list
+					<div class="question-container border background-theme-secondary pb-4">
+						<p class="lead mt-1"><strong>@question.Content</strong></p>
+						<ul>
+							@foreach (var respondent in Model.Respondents)
+							{
+								var response = respondent.Responses.FirstOrDefault(r => r.QuestionId == question.Id);
+								if (response != null)
+								{
+									<li>@Html.DisplayFor(model => response.Content)</li>
+								}
+							}
+						</ul>
+					</div>
 				}
 			}
-
-			// Make sure the js files have access to the necessary data. Also put the canvas in the correct div
-			<script>
-				var passLabels = @Html.Raw(@answerAlternativeArray);
-				var passData = @Json.Serialize(counts);
-				var passId = @question.Id;
-			</script>
-
-						// Draw charts
-			<script src="~/js/Visualizations/BarChart.js"></script>
-			<script src="~/js/Visualizations/DoughnutChart.js"></script>
 		}
 		else
 		{
-			// Answers to free-text questions will just be placed in a list
-			<div class="question-container border background-theme-secondary pb-4">
-				<p class="lead mt-1"><strong>@question.Content</strong></p>
-				<ul>
-					@foreach (var respondent in Model.Respondents)
-					{
-						var response = respondent.Responses.FirstOrDefault(r => r.QuestionId == question.Id);
-						if (response != null)
-						{
-							<li>@Html.DisplayFor(model => response.Content)</li>
-						}
-					}
-				</ul>
-			</div>
+			<p>No respondents yet.</p>
 		}
-	}
-}
-else
-{
-	<p>No respondents yet.</p>
-}
+	</div>
+</div>
 
 @section Scripts{
 	<script>
@@ -156,8 +177,8 @@ else
 			toggleElementsStartingWith('doughnut_');
 		});
 
-		// Expand/Collapse the email-form
-		$("#collapseButton").on("click", function () {
+		// Switch arrow icon when expanding/collapsing
+		$(".collapseButton").on("click", function () {
 			$(this).find(".bi").toggleClass("bi-chevron-down bi-chevron-up");
 		});
 	</script>

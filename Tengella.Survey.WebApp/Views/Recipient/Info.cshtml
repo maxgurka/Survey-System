@@ -1,0 +1,98 @@
+﻿@model Tengella.Survey.Data.Models.Recipient
+
+<h2>Recipient Details</h2>
+
+@using (Html.BeginForm("Update", "Recipient", FormMethod.Post))
+{
+	@Html.HiddenFor(m => m.Id)
+
+	<div class="form-group">
+		<label>Email</label>
+		<input type="text" class="form-control mb-2" name="Email" value="@Model.Email" disabled />
+	</div>
+
+	<div class="form-group">
+		<label>Name</label>
+		<input type="text" class="form-control mb-2" name="Name" value="@Model.Name" disabled />
+	</div>
+
+	<div class="form-group">
+		<label>Type</label>
+		<select asp-for="Type" asp-items="Html.GetEnumSelectList<Tengella.Survey.Data.Models.RecipientType>()" class="form-control mb-2" disabled></select>
+	</div>
+
+	<div class="form-group">
+		<label>Identifier</label>
+		<input type="text" class="form-control mb-2" name="Identifier" value="@Model.Identifier" disabled />
+	</div>
+
+
+	<div class="d-flex justify-content-between">
+		<div>
+			<button type="button" class="btn btn-primary" id="editButton">Edit</button>
+			<button type="submit" class="btn btn-primary" id="saveButton" style="display:none;" disabled>Save</button>
+			<button type="button" class="btn btn-primary" id="cancelButton" style="display:none;">Cancel</button>
+		</div>
+
+		<button type="button" class="btn btn-secondary" id="deleteButton" style="display:none;">Delete</button>
+	</div>
+}
+
+
+@section scripts {
+	<script>
+		$(function () {
+
+			// Edit button
+			$("#editButton").on("click", function () {
+				$("input").prop("disabled", false);
+				$("select").prop("disabled", false);
+				$("#editButton").hide();
+				$("#saveButton").show();
+				$("#cancelButton").show();
+				$("#deleteButton").show();
+			});
+
+			// Enable the Save button when user makes changes to inputs or dropdown
+			$("input, select").on("input change", function () {
+				$("#saveButton").prop("disabled", false);
+			});
+
+			// Save button
+			$("#saveButton").on("click", function (e) {
+
+				// Show a confirmation popup before saving
+				var confirmSave = window.confirm("Save changes?");
+
+				if (!confirmSave) {
+					e.preventDefault();
+				}
+			});
+
+			// Cancel button
+			$("#cancelButton").on("click", function () {
+
+				// Show a confirmation window before discarding, but only if any changes has been made
+				var cancel = true;
+				if (!$("#saveButton").prop("disabled")) {
+					cancel = window.confirm("Discard changes?");
+				}
+
+				if (cancel) {
+					// Cancel changes by simply refreshing the page
+					window.location.reload();
+				}
+			});
+			// Delete button
+			$("#deleteButton").on("click", function () {
+
+				// Show a confirmation window before deleting
+				var del = window.confirm("Delete recipient from database?");
+
+				if (del) {
+					$("form").attr("action", "/Recipient/Delete").submit();
+				}
+			});
+		});
+	</script>
+}
