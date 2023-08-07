@@ -53,14 +53,23 @@ body {
 }
 
 .container-fluid {
-    max-width: 800px;
+    max-width: 1200px;
+}
+.content-area {
+    background-color: white;
+    height: 100vh;
 }
 .question-text {
     font-size: 10px;
 }
 
+.card-width{
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 .background-theme-primary {
-    background-color: #fffaf5;
+    background-color: white;
 }
 
 .background-theme-secondary {
