@@ -2,9 +2,9 @@
 @{
 	ViewData["Title"] = "Recipients";
 }
-<p><a asp-area="" asp-controller="Recipient" asp-action="Create">New Recipient</a></p>
+<a class="btn btn-primary mb-5" asp-controller="Recipient" asp-action="Create">New Recipient</a>
 
-<table class="table">
+<table class="table table-hover table-borderless" id="recipient-table">
 	<thead>
 		<tr>
 			<th>
@@ -47,3 +47,25 @@
 		}
 	</tbody>
 </table>
+
+@section Scripts{
+	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+	<script>
+		var dataTable = $('#recipient-table').DataTable({
+			language: {
+				searchPlaceholder: "Search", 
+				search: "" // Placeholder instead of label
+			},
+			columnDefs: [
+				{
+					targets: -1,
+					orderable: false, //Disable sorting for last column
+					className: 'dt-body-center',
+					width: '1' // Small width makes the column width fit content
+				}
+			]
+		});
+	</script>
+}
