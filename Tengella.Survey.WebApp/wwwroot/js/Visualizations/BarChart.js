@@ -24,7 +24,7 @@ new Chart("bar_" + passId, {
             yAxes: [{
                 // Set label width. Will keep the charts the same size but will truncate long labels
                 afterFit: function (scaleInstance) {
-                    scaleInstance.width = 150;
+                    scaleInstance.width = 140;
                 }
             }]
         }

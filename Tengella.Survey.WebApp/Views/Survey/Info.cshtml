@@ -7,19 +7,21 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 
+<div class="d-flex justify-content-between mt-5">
+	<div>
+		<h1 class="display-4">@Model.Name</h1>
+		<h1 class="display-6 text-muted">@Model.Description</h1>
+	</div>
+	<div class="d-flex flex-column align-items-end mt-3">
+		<p class="mb-0">Number of respondents: @Model.Respondents.Count</p>
+		<p>End date: @Html.Raw(Model.EndDate.HasValue ? Model.EndDate.Value.ToString("dd/MM/yyyy") : "")</p>
+	</div>
+</div>
 
-<h1>@Model.Name</h1>
-<h2>@Model.Description</h2>
-<h2>Number of respondents: @Model.Respondents.Count</h2>
 
 <!-- Send email form container -->
-<div class="container mb-2 mt-2">
-	<!-- Button for expanding/collapsing form -->
-	<button class="btn collapseButton" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm"
-			aria-expanded="false" aria-controls="collapseForm">
-		Send survey <i class="bi bi-chevron-down"></i>
-	</button>
-	<div class="collapse mt-2" id="collapseForm">
+<div class="mb-3 mt-5">
+	<div class="collapse" id="collapseForm">
 		<!-- The form -->
 		<form asp-controller="Survey" asp-action="Info" method="post" target="_blank" accept-charset="UTF-8">
 			<div class="form-group">
@@ -65,77 +67,92 @@
 			</div>
 		</form>
 	</div>
+
+	<div class ="d-flex justify-content-between mt-5">
+		
+		<!-- Button for expanding/collapsing form -->
+		<button class="btn collapseButton accent-theme-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm"
+				aria-expanded="false" aria-controls="collapseForm">
+			Send survey <i class="bi bi-chevron-up"></i>
+		</button>
+		@if (Model.Respondents.Count > 0)
+		{
+				<div class="btn-group" role="group" aria-label="Chart type">
+					<button id="enable-bar-chart" type="button" class="btn btn-outline-primary active"><i class="bi bi-bar-chart-line-fill"></i></button>
+					<button id="enable-doughnut-chart" type="button" class="btn btn-outline-primary"><i class="bi bi-pie-chart"></i></button>
+				</div>
+		}
+	</div>
 </div>
 
 
 @if (Model.Respondents.Count > 0)
 {
-	<div class="form-check form-switch mb-3">
-		<input class="form-check-input" type="checkbox" id="toggle-charts">
-		<label class="form-check-label" for="toggle-charts">Chart type</label>
-	</div>
-
-	@foreach (var question in Model.Questions)
-	{
-		@if (question.Answers.Any())
+	<div id="masonry-container" class="row">
+		@foreach (var question in Model.Questions)
 		{
-			// Determine the height of the chart based on the number of alternatives
-			string chartHeight = 100 + question.Answers.Count * 55 + "px";
-
-			<div class="question-container border background-theme-secondary pb-4">
-				<p class="lead mt-1"><strong>@question.Content</strong></p>
-				<canvas id="bar_@question.Id" style="width: 100%; height: @chartHeight;"></canvas>
-				<canvas id="doughnut_@question.Id" style="width: 100%; height: 400px;"></canvas>
-			</div>
-
-			// Getting the answer alternatives for this question
-			List<string> answerAlternatives = question.Answers.Select(answer => answer.Content).ToList();
-			string answerAlternativeArray = "[" + string.Join(",", answerAlternatives.Select(content => "\"" + content + "\"")) + "]";
-
-			// How many times was each alternative picked?
-			var answerIds = question.Answers.Select(answer => answer.Id).ToList();
-			int[] counts = new int[answerIds.Count];
-
-			@foreach (var respondent in Model.Respondents)
-			{
-				int responseId = int.Parse(respondent.Responses.First(r => r.QuestionId == question.Id).Content);
-
-				if (answerIds.Contains(responseId))
+			<div class="col-md-6 masonry-item">
+				@if (question.Answers.Any())
 				{
-					int index = answerIds.IndexOf(responseId);
-					counts[index]++;
-				}
-			}
+					// Determine the height of the chart based on the number of alternatives
+					string chartHeight = 100 + question.Answers.Count * 55 + "px";
 
-			// Make sure the js files have access to the necessary data. Also put the canvas in the correct div
-			<script>
-				var passLabels = @Html.Raw(@answerAlternativeArray);
-				var passData = @Json.Serialize(counts);
-				var passId = @question.Id;
-			</script>
+					<div class="question-container border background-theme-secondary pb-4">
+						<p class="lead mt-1"><strong>@question.Content</strong></p>
+						<canvas id="bar_@question.Id" style="width: 100%; height: @chartHeight;"></canvas>
+						<canvas id="doughnut_@question.Id" style="width: 100%; height: 400px;"></canvas>
+					</div>
 
-						// Draw charts
-			<script src="~/js/Visualizations/BarChart.js"></script>
-			<script src="~/js/Visualizations/DoughnutChart.js"></script>
-		}
-		else
-		{
-			// Answers to free-text questions will just be placed in a list
-			<div class="question-container border background-theme-secondary pb-4">
-				<p class="lead mt-1"><strong>@question.Content</strong></p>
-				<ul>
+					// Getting the answer alternatives for this question
+					List<string> answerAlternatives = question.Answers.Select(answer => answer.Content).ToList();
+					string answerAlternativeArray = "[" + string.Join(",", answerAlternatives.Select(content => "\"" + content + "\"")) + "]";
+
+					// How many times was each alternative picked?
+					var answerIds = question.Answers.Select(answer => answer.Id).ToList();
+					int[] counts = new int[answerIds.Count];
+
 					@foreach (var respondent in Model.Respondents)
 					{
-						var response = respondent.Responses.FirstOrDefault(r => r.QuestionId == question.Id);
-						if (response != null)
+						int responseId = int.Parse(respondent.Responses.First(r => r.QuestionId == question.Id).Content);
+
+						if (answerIds.Contains(responseId))
 						{
-							<li>@Html.DisplayFor(model => response.Content)</li>
+							int index = answerIds.IndexOf(responseId);
+							counts[index]++;
 						}
 					}
-				</ul>
+
+					// Make sure the js files have access to the necessary data. Also put the canvas in the correct div
+					<script>
+						var passLabels = @Html.Raw(@answerAlternativeArray);
+						var passData = @Json.Serialize(counts);
+						var passId = @question.Id;
+					</script>
+
+					// Draw charts
+					<script src="~/js/Visualizations/BarChart.js"></script>
+					<script src="~/js/Visualizations/DoughnutChart.js"></script>
+				}
+				else
+				{
+					// Answers to free-text questions will just be placed in a list
+					<div class="question-container border background-theme-secondary pb-4">
+						<p class="lead mt-1"><strong>@question.Content</strong></p>
+						<ul>
+							@foreach (var respondent in Model.Respondents)
+							{
+								var response = respondent.Responses.FirstOrDefault(r => r.QuestionId == question.Id);
+								if (response != null)
+								{
+									<li>@Html.DisplayFor(model => response.Content)</li>
+								}
+							}
+						</ul>
+					</div>
+				}
 			</div>
 		}
-	}
+	</div>
 }
 else
 {
@@ -143,33 +160,83 @@ else
 }
 
 @section Scripts{
+	<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			var masonryContainer = document.getElementById('masonry-container');
+			var masonry = new Masonry(masonryContainer, {
+				itemSelector: '.masonry-item',
+				columnWidth: '.masonry-item',
+				percentPosition: true
+			});
+		});
+	</script>
 	<script>
 		// Hides doughnut charts by default
 		const elements = $('[id^="' + "doughnut_" + '"]');
 		elements.hide();
 
 		// Toggle between doughnut and bar charts
-		function toggleElementsStartingWith(namePrefix) {
+		function toggleElementsStartingWith(namePrefix, enabled) {
 			const elements = $('[id^="' + namePrefix + '"]');
 			elements.each(function () {
 				const element = $(this);
-				if (element.is(':hidden')) {
-					element.show(500);
+				if (enabled) {
+					element.show(500, function () {
+						clearInterval(animationInterval);
+					});
 				} else {
-					element.hide(500);
+					element.hide(500, function () {
+						clearInterval(animationInterval);
+					});
 				}
+				var animationInterval = setInterval(function () {
+					updateMasonryLayout();
+				}, 25);
 			});
 		}
 
-		// Toggle button
-		$('#toggle-charts').on('click', function () {
-			toggleElementsStartingWith('bar_');
-			toggleElementsStartingWith('doughnut_');
+		// Updates the masonry to make sure it tiles correctly on changes
+		function updateMasonryLayout() {
+			var masonryContainer = document.getElementById('masonry-container');
+			var masonry = new Masonry(masonryContainer, {
+				itemSelector: '.masonry-item',
+				columnWidth: '.masonry-item',
+				percentPosition: true
+			});
+
+			// Layout Masonry items
+			masonry.layout();
+		}
+
+		// Toggle between bar and doughnut charts
+		$('#enable-bar-chart').on('click', function () {
+			toggleElementsStartingWith('bar_', true);
+			toggleElementsStartingWith('doughnut_', false);
+
+			// Toggle active class and icon styles
+			$('#enable-bar-chart').addClass('active');
+			$('#enable-doughnut-chart').removeClass('active');
+
+			// Remove focus to prevent highlighting
+			$('#enable-bar-chart').blur();
+		});
+
+		$('#enable-doughnut-chart').on('click', function () {
+			toggleElementsStartingWith('bar_', false);
+			toggleElementsStartingWith('doughnut_', true);
+
+			// Toggle active class and icon styles
+			$('#enable-doughnut-chart').addClass('active');
+			$('#enable-bar-chart').removeClass('active');
+
+			// Remove focus to prevent highlighting
+			$('#enable-doughnut-chart').blur();
 		});
 
 		// Switch arrow icon when expanding/collapsing
 		$(".collapseButton").on("click", function () {
-			$(this).find(".bi").toggleClass("bi-chevron-down bi-chevron-up");
+			$(this).find(".bi").toggleClass("bi-chevron-up bi-chevron-down");
 		});
 	</script>
 }

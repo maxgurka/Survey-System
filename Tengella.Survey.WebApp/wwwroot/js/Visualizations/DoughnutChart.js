@@ -18,7 +18,10 @@ new Chart("doughnut_" + passId, {
                 ,'#f5964280'
                 ,'#42f5f280'],
             data: passData,
-            barThickness: 50
+            hoverBorderColor: '#00000033',
+            borderAlign: 'inner',
+            borderWidth: 2,
+            
         }]
     },
     options: {

@@ -35,7 +35,7 @@
 					@Html.Raw(obj.EndDate.HasValue ? obj.EndDate.Value.ToString("dd/MM/yyyy") : "-")
 				</td>
 				<td>
-					<a href="@Url.Action("Info", "Survey", new { id = obj.Id })" class="text-muted"><i class="bi bi-chevron-double-right"></i></a>
+					<a href="@Url.Action("Info", "Survey", new { id = obj.Id })" class="text-muted"><i class="bi bi-box-arrow-up-right"></i></a>
 				</td>
 			</tr>
 		}

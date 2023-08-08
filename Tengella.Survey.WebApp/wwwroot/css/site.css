@@ -1,24 +1,25 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
     margin-bottom: 60px;
+    background-color: white;
 }
 
 
@@ -31,6 +32,7 @@ body {
     margin-bottom: 15px;
     cursor: grab;
 }
+
 .question-container:active {
     cursor: grabbing;
 }
@@ -38,7 +40,7 @@ body {
 .survey-creation-controls {
     display: flex;
     justify-content: flex-start;
-    gap:10px;
+    gap: 10px;
     align-items: flex-end;
 }
 
@@ -55,15 +57,17 @@ body {
 .container-fluid {
     max-width: 1200px;
 }
+
 .content-area {
     background-color: white;
     height: 100vh;
 }
+
 .question-text {
     font-size: 10px;
 }
 
-.card-width{
+.card-width {
     max-width: 800px;
     margin: 0 auto;
 }
@@ -76,17 +80,46 @@ body {
     background-color: #fffdfa;
     border-color: #AD936A;
 }
+
 .accent-theme-primary {
-    background-color: #AD936A;
+    background-color: gray;
     color: #FFFCF7;
 }
+
 .accent-theme-secondary {
     background-color: #1E87E6;
     color: #FFFCF7;
 }
+
 .gray-extra {
     background-color: #A3A5A6;
 }
-.bg {
-    background-image: url(https://images.eclub.se/images/mio/assets/bg.jpg);
+
+.table {
+    box-shadow: 5px 5px 17px rgba(0, 0, 0, 0.05);
+    border: solid 1px lightgray;
+    border-radius: 5px;
+}
+
+.table thead th {
+    background-color: gray; /* Set your desired background color for header row */
+    color: white; /* Set the text color for header row */
+}
+
+/* Non-clicked sort icon */
+table.dataTable thead .sorting::before,
+table.dataTable thead .sorting::after,
+table.dataTable thead .sorting_asc_disabled::before,
+table.dataTable thead .sorting_desc_disabled::before,
+table.dataTable thead .sorting_asc_disabled::after,
+table.dataTable thead .sorting_desc_disabled::after {
+    color: gray; /* Set your desired color for non-clicked arrows */
+    opacity: 1 !important;
+}
+
+/* Active sort icon */
+table.dataTable thead .sorting_asc::before,
+table.dataTable thead .sorting_desc::after {
+    color: white;
+    opacity: 1 !important;
 }
