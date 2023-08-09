@@ -12,7 +12,7 @@ namespace Tengella.Survey.Data.Models
         public required string Name { get; set; }
         public required string Description { get; set; }
         public DateTime? EndDate { get; set; }
-        public required ICollection<Question> Questions { get; set; }
-		public ICollection<Respondent>? Respondents { get; set; }
+        public virtual ICollection<Question>? Questions { get; set; }
+		public virtual ICollection<Respondent>? Respondents { get; set; }
 	}
 }

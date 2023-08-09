@@ -17,7 +17,7 @@
 				End Date
 			</th>
 			<th>
-				View
+				
 			</th>
 		</tr>
 	</thead>
@@ -34,8 +34,13 @@
 				<td>
 					@Html.Raw(obj.EndDate.HasValue ? obj.EndDate.Value.ToString("dd/MM/yyyy") : "-")
 				</td>
-				<td>
-					<a href="@Url.Action("Info", "Survey", new { id = obj.Id })" class="text-muted"><i class="bi bi-box-arrow-up-right"></i></a>
+				<td class="text-end">
+					<a href="@Url.Action("Info", "Survey", new { id = obj.Id })" class="text-muted"><i class="bi bi-info-circle"></i></a>
+					<a href="@Url.Action("Create", "Survey", new { id = obj.Id })" class="text-muted"><i class="bi bi-files"></i></a>
+					<form method="post" action="@Url.Action("Delete", "Survey")" class="d-inline" id="deleteForm-@obj.Id">
+						<input type="hidden" name="id" value="@obj.Id" />
+						<a href="#" class="text-muted" onclick="submitDeleteForm(@obj.Id);"><i class="bi bi-trash3"></i></a>
+					</form>
 				</td>
 			</tr>
 		}
@@ -57,7 +62,7 @@
 					targets: -1,
 					orderable: false, //Disable sorting for last column
 					className: 'dt-body-center',
-					width: '1' // Small width makes the column width fit content
+					width: '8%' // Small width makes the column width fit content
 				}
 			]
 		});
@@ -66,5 +71,13 @@
 		$(function () {
 			$('[data-toggle="tooltip"]').tooltip();
 		});
+
+		// Submit form when link is clicked (because no submit-button is used)
+		function submitDeleteForm(surveyId) {
+			var form = document.getElementById("deleteForm-" + surveyId);
+			if (form && confirm('Are you sure you want to delete this survey? This action cannot be undone.')) {
+				form.submit();
+			}
+		}
 	</script>
 }

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Tengella.Survey.Data.Models.Survey
+@{
 	ViewData["Title"] = "Create Survey";
 }
 
@@ -7,7 +8,7 @@
 	<div class="survey-creation-controls">
 		<div>
 			<button id="submit-survey" type="button" class="btn accent-theme-secondary">Submit</button>
-			<button id="preview" type="button" class="btn accent-theme-secondary">Preview (funkar inte än)</button>
+			<button id="preview" type="button" class="btn accent-theme-secondary">Preview</button>
 		</div>
 		<div id="end-date-container">
 			<p id="end-date-text" class="ml-3">Optional end date:</p>
@@ -30,5 +31,8 @@
 
 @section Scripts{
 	<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+	<script>
+		var surveyData = @Html.Raw(Json.Serialize(Model));
+	</script>
 	<script src="~/js/Views/Create.js"></script>
 }

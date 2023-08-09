@@ -130,6 +130,46 @@ $(function () {
         return JSON.stringify(data);
     }
 
+    // Function to populate the form when using a survey as a template
+    function populateFormFromSurvey(survey) {
+        // Set survey name and description
+        $('#survey-name').val(survey.name);
+        $('#survey-desc').val(survey.description);
+
+        // Loop through each question in the survey
+        survey.questions.forEach(question => {
+
+            if (question.answers.length > 0) {
+
+                // Add a multiple-choice question
+                $('#add-mc-question').click(); // Just using the same button as the user would
+
+                //Set the question text after question has been created
+                var questionContainer = $('.question-container').last();
+                questionContainer.find('.question-name').val(question.content);
+
+                //Set answer texts
+                question.answers.forEach((answer, index) => {
+                    if (index >= minFields) {
+                        questionContainer.find('.add-answer').click();
+                    }
+                    var answerInput = questionContainer.find('.answer input').eq(index);
+                    answerInput.val(answer.content);
+                });
+            } else {
+                // Add a free-text question
+                $('#add-question').click(); // Button press creates the element for us
+
+                //Set question text
+                var questionContainer = $('.question-container').last();
+                questionContainer.find('.question-name').val(question.content);
+            }
+        });
+
+        // Update button states after populating the form
+        updateButtonStates();
+    }
+
     // Handle form submission
     $('#submit-survey').click(async function () {
 
@@ -202,5 +242,9 @@ $(function () {
         $(this).closest('.question-container').remove();
         updateButtonStates();
     });
+
     updateButtonStates();
+    if (surveyData) {
+        populateFormFromSurvey(surveyData);
+    }
 });
