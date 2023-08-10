@@ -21,7 +21,7 @@
 
 <!-- Send email form container -->
 <div class="mb-3 mt-5">
-	<div class="collapse question-container border background-theme-secondary pb-3" id="collapseForm">
+	<div class="collapse card-container pb-3" id="collapseForm">
 		<!-- The form -->
 		<form asp-controller="Survey" asp-action="Info" method="post" target="_blank" accept-charset="UTF-8">
 			<div class="form-group">
@@ -97,7 +97,7 @@
 					// Determine the height of the chart based on the number of alternatives
 					string chartHeight = 100 + question.Answers.Count * 55 + "px";
 
-					<div class="question-container border background-theme-secondary pb-4">
+					<div class="card-container pb-4">
 						<p class="lead mt-1"><strong>@question.Content</strong></p>
 						<canvas id="bar_@question.Id" style="width: 100%; height: @chartHeight;"></canvas>
 						<canvas id="doughnut_@question.Id" style="width: 100%; height: 400px;"></canvas>
@@ -136,7 +136,7 @@
 				else
 				{
 					// Answers to free-text questions will just be placed in a list
-					<div class="question-container border background-theme-secondary pb-4">
+					<div class="card-container pb-4">
 						<p class="lead mt-1"><strong>@question.Content</strong></p>
 						<ul>
 							@foreach (var respondent in Model.Respondents)

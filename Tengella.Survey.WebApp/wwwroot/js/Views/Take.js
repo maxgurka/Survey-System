@@ -4,7 +4,7 @@
     function serializeFormData() {
 
         var answers = [];
-        $('.question-container').each(function () {
+        $('.card-container').each(function () {
             var answer = {};
 
             if ($(this).find('input[type="radio"]').length > 0) {

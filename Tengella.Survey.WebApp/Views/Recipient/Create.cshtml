@@ -3,27 +3,27 @@
     ViewData["Title"] = "Create Recipient";
 }
 
-<div class="container">
+<div class="small-width card-container pb-4 mt-5">
     <h2>Create Recipient</h2>
     <form asp-action="Create">
-        <div class="form-group">
+        <div class="form-group mb-2">
             <label>Email</label>
             <input type="email" asp-for="Email" class="form-control" />
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group mb-2">
             <label>Name</label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group mb-2">
             <label>Recipient Type</label>
             <select asp-for="Type" asp-items="Html.GetEnumSelectList<Tengella.Survey.Data.Models.RecipientType>()" class="form-control">
                 <option value="">-- Select Type --</option>
             </select>
             <span asp-validation-for="Type" class="text-danger"></span>
         </div>
-        <div class="form-group">
+        <div class="form-group mb-2">
             <label>Identifier (Organization Number or Personal Identity Number)</label>
             <input asp-for="Identifier" class="form-control" />
             <span asp-validation-for="Identifier" class="text-danger"></span>

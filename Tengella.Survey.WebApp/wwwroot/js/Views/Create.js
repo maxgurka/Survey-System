@@ -6,9 +6,9 @@ $(function () {
     // Disable/enable buttons depending on the amount of answer-fields created
     function updateButtonStates() {
         $('.form-control').removeClass('is-invalid');
-        var questionContainerCount = $('.question-container').length;
+        var questionContainerCount = $('.card-container').length;
 
-        $('.question-container').each(function () {
+        $('.card-container').each(function () {
             var textFieldCount = $(this).find('.answer').length;
             var addButton = $(this).find('.add-answer');
             var removeButtons = $(this).find('.remove-answer');
@@ -63,7 +63,7 @@ $(function () {
         }
 
         // Check each question
-        $('.question-container').each(function () {
+        $('.card-container').each(function () {
             const questionName = $(this).find('.question-name');
             const answers = $(this).find('.answer input');
 
@@ -87,7 +87,7 @@ $(function () {
         return valid;
     }
 
-    // Enable sorting on the question-container
+    // Enable sorting on the card-container
     $("#content-container").sortable({
         axix: "y"
     });
@@ -104,7 +104,7 @@ $(function () {
         var surveyDescription = $('#survey-desc').val();
         var questions = [];
 
-        $('.question-container').each(function () {
+        $('.card-container').each(function () {
             var questionName = $(this).find('.question-name').val();
             var answers = [];
 
@@ -184,7 +184,7 @@ $(function () {
                 $('#add-mc-question').click(); // Just using the same button as the user would
 
                 //Set the question text after question has been created
-                var questionContainer = $('.question-container').last();
+                var questionContainer = $('.card-container').last();
                 questionContainer.find('.question-name').val(question.content);
 
                 //Set answer texts
@@ -200,7 +200,7 @@ $(function () {
                 $('#add-question').click(); // Button press creates the element for us
 
                 //Set question text
-                var questionContainer = $('.question-container').last();
+                var questionContainer = $('.card-container').last();
                 questionContainer.find('.question-name').val(question.content);
             }
         });
@@ -222,7 +222,7 @@ $(function () {
     // Add multiple-choice question
     $('#add-mc-question').click(function () {
         const questionHtml = `
-            <div class="question-container border background-theme-secondary question-drag-handle grab">
+            <div class="card-container question-drag-handle grab">
                 ${createQuestionTextField()}
                 ${Array.from({ length: minFields }, createAnswerTextField).join('')}
                 <button type="button" class="add-answer btn btn-sm accent-theme-secondary mb-3"><span class="bi-plus-square"></span></button>
@@ -235,7 +235,7 @@ $(function () {
     // Add free-text question
     $('#add-question').click(function () {
         const html = `
-            <div class="question-container border background-theme-secondary question-drag-handle grab">
+            <div class="card-container question-drag-handle grab">
                 ${createQuestionTextField()}
             </div>`;
         $('#content-container').append(html);
@@ -256,7 +256,7 @@ $(function () {
 
     //Remove question
     $('#content-container').on('click', '.remove-question', function () {
-        $(this).closest('.question-container').remove();
+        $(this).closest('.card-container').remove();
         updateButtonStates();
     });
 

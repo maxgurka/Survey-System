@@ -6,11 +6,11 @@
 
 
 <!-- List all questions -->
-<div class="card-width">
+<div class="small-width">
 <h1 class="mb-3">@Model.Name</h1>
 	@foreach (var question in Model.Questions)
 	{
-		<div class="question-container border background-theme-secondary">
+		<div class="card-container">
 			<p class="lead"><strong>@question.Content</strong></p>
 
 			<!-- Check if question contains any answer alternatives -->
