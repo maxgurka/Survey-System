@@ -349,8 +349,8 @@ namespace Tengella.Survey.WebApp.Controllers
 
 					// Send the email here using recipient.Email as th email
 				}
-				return Ok();
-			}
+                return Content("Email sent to " + recipients.Count + " adresse(s)", "text/plain; charset=utf-8");
+            }
 			else if (submitType == "preview")
 			{
 				//Return a preview of the message to the first recipient in the list

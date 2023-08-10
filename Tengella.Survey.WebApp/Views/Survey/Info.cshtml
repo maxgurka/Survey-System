@@ -60,7 +60,7 @@
 			<!-- Submit and preview buttons, and link to survey -->
 			<div class="d-flex justify-content-between">
 				<div>
-					<button type="submit" class="btn btn-primary" name="submitType" value="preview">Send</button>
+					<button type="submit" class="btn btn-primary" name="submitType" value="send">Send</button>
 					<button type="submit" class="btn btn-primary" name="submitType" value="preview">Preview</button>
 				</div>
 				<a href="@Url.Action("Take", "Survey", new { id = Model.Id })">Link to survey</a>
@@ -161,7 +161,9 @@ else
 
 @section Scripts{
 	<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+
 	<script>
+		// Using a masonry container to stack the questions evenly
 		$(document).ready(function () {
 			var masonryContainer = document.getElementById('masonry-container');
 			var masonry = new Masonry(masonryContainer, {
@@ -191,7 +193,7 @@ else
 					});
 				}
 				var animationInterval = setInterval(function () {
-					updateMasonryLayout();
+					updateMasonryLayout(); //Update the masonry layout during the animation so the container size changes smoothly
 				}, 25);
 			});
 		}
@@ -209,7 +211,7 @@ else
 			masonry.layout();
 		}
 
-		// Toggle between bar and doughnut charts
+		// Buttons for toggling between bar and doughnut charts
 		$('#enable-bar-chart').on('click', function () {
 			toggleElementsStartingWith('bar_', true);
 			toggleElementsStartingWith('doughnut_', false);

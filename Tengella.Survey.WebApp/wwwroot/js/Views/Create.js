@@ -6,6 +6,8 @@ $(function () {
     // Disable/enable buttons depending on the amount of answer-fields created
     function updateButtonStates() {
         $('.form-control').removeClass('is-invalid');
+        var questionContainerCount = $('.question-container').length;
+
         $('.question-container').each(function () {
             var textFieldCount = $(this).find('.answer').length;
             var addButton = $(this).find('.add-answer');
@@ -14,7 +16,11 @@ $(function () {
             addButton.prop('disabled', textFieldCount >= maxFields);
             removeButtons.prop('disabled', textFieldCount <= minFields);
         });
-    };
+
+        // Also disable create/preview buttons if there aren't any quesstions
+        $('.survey-creation-controls button').prop('disabled', questionContainerCount === 0);
+    }
+
 
     // Returns html for a new answer alternative input
     function createAnswerTextField() {
