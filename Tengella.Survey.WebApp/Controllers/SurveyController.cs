@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Text.Json;
 using Tengella.Survey.Data;
 using Tengella.Survey.Data.Migrations;
@@ -63,7 +64,7 @@ namespace Tengella.Survey.WebApp.Controllers
 			// Make sure they contain something
 			if (string.IsNullOrWhiteSpace(surveyName) || string.IsNullOrWhiteSpace(surveyDescription))
 			{
-				return BadRequest("Invalid or missing data.");
+				return BadRequest();
 			}
 
 			// Loop through all questions in the survey
@@ -76,7 +77,7 @@ namespace Tengella.Survey.WebApp.Controllers
 					!questionElement.TryGetProperty("answers", out JsonElement answerArrayElement) ||
 					answerArrayElement.ValueKind != JsonValueKind.Array)
 				{
-					return BadRequest("Invalid or missing data.");
+					return BadRequest();
 				}
 
 				string questionText = questionNameElement.GetString() ?? "";
@@ -94,7 +95,7 @@ namespace Tengella.Survey.WebApp.Controllers
 					// Get property
 					if (!answerElement.TryGetProperty("text", out JsonElement answerTextElement))
 					{
-						return BadRequest("Invalid or missing data.");
+						return BadRequest();
 					}
 
 					string answerText = answerTextElement.GetString() ?? "";
@@ -139,14 +140,29 @@ namespace Tengella.Survey.WebApp.Controllers
 				}
 				else
 				{
-					return BadRequest("Invalid or missing data");
+					return BadRequest();
 				}
 			}
 
-			_surveyDbcontext.Add(survey);
-			_surveyDbcontext.SaveChanges();
+			// Checking if it's supposed to be saved to the database or if it's just a preview
+			if (jsonData.TryGetProperty("preview", out JsonElement previewElement))
+			{
+				if (previewElement.GetBoolean())
+				{
+					TempData["surveyPreview"] = JsonConvert.SerializeObject(survey);
+				}
+				else
+				{
+					_surveyDbcontext.Add(survey);
+					_surveyDbcontext.SaveChanges();
+				}
+			}
+			else
+			{
+				return BadRequest();
+			}
 
-			return RedirectToAction("List", "Survey");
+			return Ok();
 		}
 
 		/// <summary>
@@ -171,6 +187,11 @@ namespace Tengella.Survey.WebApp.Controllers
 			.ThenInclude(q => q.Answers)
 			.Single(s => s.Id == id);
 
+			if(survey == null)
+			{
+				return NotFound();
+			}
+
 			// Check for an end date in survey
 			if (survey.EndDate.HasValue)
 			{
@@ -180,17 +201,27 @@ namespace Tengella.Survey.WebApp.Controllers
 				if (compareResult > 0)
 				{
 					// Survey is no longer open
-					return null;
-				}
-				else if (compareResult <= 0)
-				{
-
+					return BadRequest();  //TODO: tell the user that the survey is closed
 				}
 			}
 
 			return View(survey);
+		}
 
-			//TODO: Felhantering
+		/// <summary>
+		/// Preview survey by showing in the Take page
+		/// </summary>
+		public IActionResult Preview()
+		{
+			// Getting the survey that was stored right after it was created
+			var survey = JsonConvert.DeserializeObject<Data.Models.Survey>(TempData["surveyPreview"] as string);
+
+			if (survey == null)
+			{
+				return BadRequest();
+			}
+			ViewData["IsPreview"] = true; // Letting the view know it's not a real survey, so it can't be submitted
+			return View("Take", survey);
 		}
 
 		/// <summary>
@@ -201,18 +232,16 @@ namespace Tengella.Survey.WebApp.Controllers
 		public IActionResult Take([FromBody] JsonElement jsonData)
 		{
 			// Get properties
-			int surveyId;
-			if (jsonData.TryGetProperty("surveyId", out JsonElement idElement) &&
-				jsonData.TryGetProperty("answers", out JsonElement questionArrayElement) &&
-				idElement.ValueKind == JsonValueKind.Number &&
-				questionArrayElement.ValueKind == JsonValueKind.Array)
-			{
-				surveyId = idElement.GetInt32();
-			}
-			else
+			if (!jsonData.TryGetProperty("surveyId", out JsonElement idElement) ||
+				!jsonData.TryGetProperty("answers", out JsonElement questionArrayElement) ||
+				questionArrayElement.ValueKind != JsonValueKind.Array ||
+				idElement.ValueKind != JsonValueKind.Number)
 			{
 				return BadRequest();
 			}
+
+			int surveyId = idElement.GetInt32();
+
 
 			// Get response data and add new Response-objects to a list
 			List<Response> responses = new();
@@ -225,11 +254,10 @@ namespace Tengella.Survey.WebApp.Controllers
 				{
 					return BadRequest();
 				}
-				int questionId = questionIdElement.GetInt32();
 				string questionText = contentElement.GetString() ?? "";
 
 				// Make sure the string contain something
-				if (string.IsNullOrWhiteSpace(questionText))
+				if (string.IsNullOrWhiteSpace(questionText) || !int.TryParse(questionIdElement.GetString(), out int questionId))
 				{
 					return BadRequest();
 				}
@@ -285,14 +313,10 @@ namespace Tengella.Survey.WebApp.Controllers
 
 			ViewData["Recipients"] = _surveyDbcontext.Recipients;
 
-			if (survey != null)
+			if (survey == null)
 			{
+				return NotFound();
 			}
-			else
-			{
-				//TODO: felhantering när survey ej existerar
-			}
-
 
 			return View(survey);
 		}

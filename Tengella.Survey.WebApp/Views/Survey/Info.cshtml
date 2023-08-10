@@ -9,19 +9,19 @@
 
 <div class="d-flex justify-content-between mt-5">
 	<div>
-		<h1 class="display-4">@Model.Name</h1>
-		<h1 class="display-6 text-muted">@Model.Description</h1>
+		<h1 class="display-6">@Model.Name</h1>
+		<p class="lead text-muted">@Model.Description</p>
 	</div>
-	<div class="d-flex flex-column align-items-end mt-3">
+	<div class="d-flex flex-column align-items-end mt-3 survey-info-div">
 		<p class="mb-0">Number of respondents: @Model.Respondents.Count</p>
-		<p>End date: @Html.Raw(Model.EndDate.HasValue ? Model.EndDate.Value.ToString("dd/MM/yyyy") : "")</p>
+		<p>@Html.Raw(Model.EndDate.HasValue ? "End date: " + Model.EndDate.Value.ToString("dd/MM/yyyy") : "")</p>
 	</div>
 </div>
 
 
 <!-- Send email form container -->
 <div class="mb-3 mt-5">
-	<div class="collapse" id="collapseForm">
+	<div class="collapse question-container border background-theme-secondary pb-3" id="collapseForm">
 		<!-- The form -->
 		<form asp-controller="Survey" asp-action="Info" method="post" target="_blank" accept-charset="UTF-8">
 			<div class="form-group">
@@ -68,7 +68,7 @@
 		</form>
 	</div>
 
-	<div class ="d-flex justify-content-between mt-5">
+	<div class ="d-flex justify-content-between">
 		
 		<!-- Button for expanding/collapsing form -->
 		<button class="btn collapseButton accent-theme-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm"
@@ -77,10 +77,10 @@
 		</button>
 		@if (Model.Respondents.Count > 0)
 		{
-				<div class="btn-group" role="group" aria-label="Chart type">
-					<button id="enable-bar-chart" type="button" class="btn btn-outline-primary active"><i class="bi bi-bar-chart-line-fill"></i></button>
-					<button id="enable-doughnut-chart" type="button" class="btn btn-outline-primary"><i class="bi bi-pie-chart"></i></button>
-				</div>
+			<div class="btn-group" role="group" aria-label="Chart type">
+				<button id="enable-bar-chart" type="button" class="btn btn-outline-primary active"><i class="bi bi-bar-chart-line-fill"></i></button>
+				<button id="enable-doughnut-chart" type="button" class="btn btn-outline-primary"><i class="bi bi-pie-chart"></i></button>
+			</div>
 		}
 	</div>
 </div>

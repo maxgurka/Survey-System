@@ -30,10 +30,12 @@ body {
     padding-left: 25px;
     padding-top: 20px;
     margin-bottom: 15px;
+}
+.grab {
     cursor: grab;
 }
 
-.question-container:active {
+.grab:active {
     cursor: grabbing;
 }
 
@@ -101,6 +103,10 @@ body {
     border-radius: 5px;
 }
 
+.border-right {
+    border-right: solid 1px lightgray;
+}
+
 .table thead th {
     background-color: gray; /* Set your desired background color for header row */
     color: white; /* Set the text color for header row */
@@ -122,4 +128,7 @@ table.dataTable thead .sorting_asc::before,
 table.dataTable thead .sorting_desc::after {
     color: white;
     opacity: 1 !important;
+}
+.survey-info-div {
+    min-width: 20%;
 }

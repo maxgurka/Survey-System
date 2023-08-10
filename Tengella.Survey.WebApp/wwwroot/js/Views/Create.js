@@ -93,7 +93,7 @@ $(function () {
     });
 
     // Serialize the form data as a JSON object
-    function serializeFormData() {
+    function serializeFormData(preview) {
         var surveyName = $('#survey-name').val();
         var surveyDescription = $('#survey-desc').val();
         var questions = [];
@@ -119,7 +119,8 @@ $(function () {
         var data = {
             name: surveyName,
             description: surveyDescription,
-            questions: questions
+            questions: questions,
+            preview: preview
         };
 
         // Add the end date to the JSON object if it exists
@@ -128,6 +129,38 @@ $(function () {
         }
 
         return JSON.stringify(data);
+    }
+
+    // Send data with POST
+    async function sendData(preview) {
+        // Validate the form before submitting
+        if (!validateForm()) {
+            return;
+        }
+        try {
+            const response = await fetch("Create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: serializeFormData(preview),
+            });
+            if (response.ok) {
+                if (preview) {
+                    window.open("/Survey/Preview", "_blank");
+                }
+                else {
+                    window.location.href = "/Survey/List";
+                }
+            }
+            else {
+                // TODO: Handle errors when the response status is not ok
+                console.error("Error:", response.statusText);
+            }
+        } catch (error) {
+            // Handle other errors
+            console.error("Error:", error);
+        }
     }
 
     // Function to populate the form when using a survey as a template
@@ -170,42 +203,20 @@ $(function () {
         updateButtonStates();
     }
 
-    // Handle form submission
-    $('#submit-survey').click(async function () {
+    // Handle survey creation
+    $('#submit-survey').click(function () {
+        sendData(false);
+    });
 
-        // Validate the form before submitting
-        if (!validateForm()) {
-            return;
-        }
-
-        try {
-            const response = await fetch("Create", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: serializeFormData(),
-            });
-            if (response.ok) {
-                const result = await response;
-                window.location.href = response.url;
-                console.log(response.body);
-                console.log("Success:", result);
-            }
-            else {
-                // TODO: Handle errors when the response status is not ok
-                console.error("Error:", response.statusText);
-            }
-        } catch (error) {
-            // Handle other errors
-            console.error("Error:", error);
-        }
+    // Handle survey preview
+    $('#preview').click(function () {
+        sendData(true);
     });
 
     // Add multiple-choice question
     $('#add-mc-question').click(function () {
         const questionHtml = `
-            <div class="question-container border background-theme-secondary question-drag-handle">
+            <div class="question-container border background-theme-secondary question-drag-handle grab">
                 ${createQuestionTextField()}
                 ${Array.from({ length: minFields }, createAnswerTextField).join('')}
                 <button type="button" class="add-answer btn btn-sm accent-theme-secondary mb-3"><span class="bi-plus-square"></span></button>
@@ -218,7 +229,7 @@ $(function () {
     // Add free-text question
     $('#add-question').click(function () {
         const html = `
-            <div class="question-container border background-theme-secondary question-drag-handle">
+            <div class="question-container border background-theme-secondary question-drag-handle grab">
                 ${createQuestionTextField()}
             </div>`;
         $('#content-container').append(html);
