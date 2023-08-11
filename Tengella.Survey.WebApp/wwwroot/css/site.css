@@ -140,3 +140,6 @@ table.dataTable thead .sorting_desc::after {
 .navbar-brand {
     font-size: 26px;
 }
+.green-text {
+    color: green;
+}

@@ -2,7 +2,30 @@
 @{
 	ViewData["Title"] = "Recipients";
 }
-<a class="btn btn-primary mb-5" asp-controller="Recipient" asp-action="Create">New Recipient</a>
+<div class="d-flex justify-content-between mb-5">
+
+	<!-- Dropdown Field -->
+	<div class="dropdown me-3">
+		<button class="btn btn-secondary dropdown-toggle" type="button" id="dummyDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			Select Item
+		</button>
+		<div class="dropdown-menu" aria-labelledby="dummyDropdown">
+			<a class="dropdown-item" href="#">Item 1</a>
+			<a class="dropdown-item" href="#">Item 2</a>
+			<a class="dropdown-item" href="#">Item 3</a>
+		</div>
+	</div>
+
+	<!-- Text Field with Bootstrap Button -->
+	<div class="input-group">
+		<input type="text" class="form-control" placeholder="Email list name" aria-label="Type something..." style="max-width: 150px;">
+		<button class="btn btn-primary" type="button">Create</button>
+	</div>
+
+	<a class="btn btn-primary flex-shrink-0" asp-controller="Recipient" asp-action="Create">New Recipient</a>
+</div>
+
+
 
 <table class="table table-hover table-borderless" id="recipient-table">
 	<thead>
