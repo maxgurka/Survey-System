@@ -39,9 +39,9 @@ body {
     cursor: grab;
 }
 
-    .grab:active {
-        cursor: grabbing;
-    }
+.grab:active {
+    cursor: grabbing;
+}
 
 .survey-creation-controls {
     display: flex;
@@ -84,7 +84,7 @@ body {
 }
 
 .accent-theme-primary {
-    background-color: gray;
+    background-color: #333333;
     color: #FFFCF7;
 }
 
@@ -109,7 +109,7 @@ body {
 }
 
 .table thead th {
-    background-color: gray; /* Set your desired background color for header row */
+    background-color: #333333; /* Set your desired background color for header row */
     color: white; /* Set the text color for header row */
 }
 
@@ -133,4 +133,10 @@ table.dataTable thead .sorting_desc::after {
 
 .survey-info-div {
     min-width: 20%;
+}
+.nav-item:hover {
+    background-color: dimgray;
+}
+.navbar-brand {
+    font-size: 26px;
 }
