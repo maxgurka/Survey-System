@@ -48,6 +48,13 @@
 </div>
 @section Scripts {
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script>var surveyId = @Model.Id</script>
+	<script>
+		var surveyId = @Model.Id;
+		@if (ViewData.ContainsKey("UserId"))
+		{
+			@:var userId = @ViewData["UserId"];
+			@:console.log(userId);
+		}
+	</script>
 	<script src="~/js/Views/Take.js"></script>
 }

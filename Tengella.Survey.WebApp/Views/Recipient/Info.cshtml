@@ -1,6 +1,7 @@
 ﻿@model Tengella.Survey.Data.Models.Recipient
 
 <h2>Recipient Details</h2>
+<p class="lead">Participated in @Model.Respondents.Count surveys</p>
 
 @using (Html.BeginForm("Update", "Recipient", FormMethod.Post))
 {

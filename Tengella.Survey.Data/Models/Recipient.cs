@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Tengella.Survey.Data.Models
 
@@ -17,6 +18,8 @@ namespace Tengella.Survey.Data.Models
 		public required string Name { get; set; }
 		public required RecipientType Type { get; set; }
 		public required string Identifier { get; set; }
+		[JsonIgnore]
+        public virtual ICollection<Respondent>? Respondents { get; set; }
 
-	}
+    }
 }

@@ -1,5 +1,5 @@
 ﻿$(function () {
-
+    
     // Function to serialize the form data as a JSON object
     function serializeFormData() {
 
@@ -36,11 +36,16 @@
 
         var jsonData = {
             surveyId: surveyId,
-        answers: answers
-    };
+            answers: answers
+        };
 
-    return JSON.stringify(jsonData);
-}
+        // Add user id if it exists
+        if (typeof userId !== 'undefined') {
+            jsonData.userId = userId;
+        }
+
+        return JSON.stringify(jsonData);
+    }
 
 		// Handle form submission
 		$('#submit-survey').click(async function postJSON() {
@@ -58,7 +63,6 @@
         if (response.ok) {
             const result = await response;
             window.location.href = response.url;
-            console.log(response.body);
             console.log("Success:", result);
         }
         else {
@@ -68,6 +72,6 @@
     } catch (error) {
         // Handle other errors
         console.error("Error:", error);
-    }
+            }
 });
 });

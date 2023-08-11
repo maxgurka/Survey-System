@@ -179,7 +179,7 @@ namespace Tengella.Survey.WebApp.Controllers
 		/// Take survey view
 		/// </summary>
 		/// <param name="id">Id of survey</param>
-		public IActionResult Take(int? id)
+		public IActionResult Take(int? id, int? user)
 		{
 			// Find survey with id
 			Data.Models.Survey? survey = _surveyDbcontext.Surveys
@@ -204,6 +204,12 @@ namespace Tengella.Survey.WebApp.Controllers
 					return BadRequest();  //TODO: tell the user that the survey is closed
 				}
 			}
+
+			// If the survey has been reached by a personal link, save the user id
+			if(user != null)
+			{
+				ViewData["UserId"] = user;
+            }
 
 			return View(survey);
 		}
@@ -231,6 +237,7 @@ namespace Tengella.Survey.WebApp.Controllers
 		[HttpPost]
 		public IActionResult Take([FromBody] JsonElement jsonData)
 		{
+
 			// Get properties
 			if (!jsonData.TryGetProperty("surveyId", out JsonElement idElement) ||
 				!jsonData.TryGetProperty("answers", out JsonElement questionArrayElement) ||
@@ -276,6 +283,19 @@ namespace Tengella.Survey.WebApp.Controllers
 			{
 				Responses = responses
 			};
+
+			// Checking for the optional user id
+			if (jsonData.TryGetProperty("userId", out JsonElement userIdElement))
+			{
+				if (userIdElement.ValueKind == JsonValueKind.Number)
+				{
+					respondent.Recipient = _surveyDbcontext.Recipients.SingleOrDefault(r => r.Id == userIdElement.GetInt32());
+				}
+				else
+				{
+					return BadRequest();
+				}
+			}
 
 			//Add to survey
 			Data.Models.Survey? survey = _surveyDbcontext.Surveys.Include(s => s.Respondents).SingleOrDefault(s => s.Id == surveyId);
@@ -355,7 +375,7 @@ namespace Tengella.Survey.WebApp.Controllers
 			{
 				//Return a preview of the message to the first recipient in the list
 				Recipient recipient = _surveyDbcontext.Recipients.Single(r => r.Id == recipientIds[0]);
-				return Content($"{greeting} {recipient.Name},\n\n{message}\n\n{surveyLink}", "text/plain; charset=utf-8");
+				return Content($"{greeting} {recipient.Name},\n\n{message}\n\n{surveyLink}?user={recipient.Id}", "text/plain; charset=utf-8");
 
 			}
 			else

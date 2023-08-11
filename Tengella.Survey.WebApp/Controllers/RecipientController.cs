@@ -31,7 +31,7 @@ namespace Tengella.Survey.WebApp.Controllers
 		/// <returns></returns>
 		public IActionResult Info(int id)
 		{
-			Recipient recipient = _surveyDbcontext.Recipients.Single(r => r.Id == id);
+			Recipient recipient = _surveyDbcontext.Recipients.Include(r => r.Respondents).Single(r => r.Id == id);
 			if(recipient != null)
 			{
 				return View(recipient);

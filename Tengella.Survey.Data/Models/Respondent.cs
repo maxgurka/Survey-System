@@ -16,5 +16,6 @@ namespace Tengella.Survey.Data.Models
         [Required]
 		[JsonIgnore]
 		public virtual Survey? Survey { get; set; }
+        public virtual Recipient? Recipient { get; set; }
 	}
 }
