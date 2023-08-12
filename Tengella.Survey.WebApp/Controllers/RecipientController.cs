@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Formats.Asn1;
+using System.Globalization;
 using Tengella.Survey.Data;
 using Tengella.Survey.Data.Migrations;
 using Tengella.Survey.Data.Models;
+using Tengella.Survey.WebApp.Mapping;
 
 namespace Tengella.Survey.WebApp.Controllers
 {
@@ -165,6 +170,37 @@ namespace Tengella.Survey.WebApp.Controllers
 
 			// Return a response to the client
 			return RedirectToAction("List", "Recipient");
+		}
+
+		[HttpPost]
+		public IActionResult AddFromFile(IFormFile file)
+		{
+			if (file != null && file.Length > 0)
+			{
+				var recipients = new List<Recipient>();
+
+				using (var streamReader = new StreamReader(file.OpenReadStream()))
+				using (var csvReader = new CsvReader(streamReader, new CsvConfiguration(CultureInfo.InvariantCulture)
+				{
+					HasHeaderRecord = true, // Specify that the CSV file has a header row
+					HeaderValidated = null, // Ignore header validation
+					MissingFieldFound = null, // Ignore missing fields
+				}))
+				{
+					csvReader.Context.RegisterClassMap<RecipientMap>();
+					recipients = csvReader.GetRecords<Recipient>().ToList();
+				}
+
+				if (recipients.Any())
+				{
+					_surveyDbcontext.Recipients.AddRange(recipients);
+					_surveyDbcontext.SaveChanges();
+
+					return Ok($"Successfully added {recipients.Count} recipients.");
+				}
+			}
+
+			return BadRequest("No file or empty file was uploaded.");
 		}
 	}
 }

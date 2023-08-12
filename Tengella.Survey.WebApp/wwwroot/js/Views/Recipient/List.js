@@ -94,3 +94,47 @@ $("#clearButton").on("click", function () {
 	// Redirect to the List action without any ID
 	window.location.href = "/Recipient/List";
 });
+
+// File input change event handler
+$("#file-picker").on("change", function () {
+	var fileName = $(this).val().split("\\").pop();
+	if (fileName !== "") {
+		$("#newRecipientButton").text("Add from file").addClass("file-selected");
+	} else {
+		$("#newRecipientButton").text("New Recipient").removeClass("file-selected");
+	}
+});
+
+// New Recipient / Add from file button click event handler
+$("#newRecipientButton").on("click", function (event) {
+	var isFileSelected = $(this).hasClass("file-selected");
+
+	if (isFileSelected) {
+		var selectedFile = $("#file-picker")[0].files[0];
+
+		if (selectedFile) {
+			var formData = new FormData();
+			formData.append("file", selectedFile);
+
+			$.ajax({
+				url: "/Recipient/AddFromFile",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (data) {
+					console.log(data);
+					// Handle the server response if needed
+					// For example, you could refresh the page or display a success message
+				},
+				error: function (error) {
+					// Handle the error if needed
+				}
+			});
+		}
+	} else {
+		// Redirect to the Create action for creating a new recipient
+		window.location.href = "/Recipient/Create";
+	}
+});
+

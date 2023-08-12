@@ -4,9 +4,10 @@
 	ViewData["Title"] = "Recipients";
 	List<RecipientList> recipientLists = ViewBag.RecipientLists;
 }
+<!-- Recipient and RecipientList Creation controls -->
 <div class="d-flex justify-content-between mb-5">
 	<div class="d-flex justify-content-start">
-		<!-- Dropdown Field -->
+		<!-- Dropdown field for picking a list -->
 		<div class="dropdown input-group">
 			<select id="recipientListDropdown" class="form-control">
 				<option value="">-- Select List --</option>
@@ -18,7 +19,7 @@
 			<button id="clearButton" class="btn btn-primary me-4">Clear</button>
 		</div>
 
-		<!-- Text Field with Form and Bootstrap Button -->
+		<!-- Text Field and button for creating a list -->
 		<form id="createListForm" asp-action="CreateRecipientList" asp-controller="Recipient" method="post" style="min-width: 220px;">
 			<div class="input-group">
 				<input type="text" name="listName" class="form-control" placeholder="Email list name">
@@ -27,7 +28,17 @@
 		</form>
 	</div>
 
-	<a class="btn btn-primary" asp-controller="Recipient" asp-action="Create">New Recipient</a>
+	<div class="d-flex justify-content-end">
+		<!-- File choose for adding recipients from file -->
+		<div>
+			<input class="form-control" type="file" id="file-picker">
+		</div>
+		<div>
+			<!-- Button for Recipient creation-->
+			<a class="btn btn-primary ms-3" id="newRecipientButton">New Recipient</a>
+		</div>
+	</div>
+
 </div>
 
 <table class="table table-hover table-borderless" id="recipient-table">
@@ -35,7 +46,6 @@
 		<tr>
 			<th>
 				<!-- Checkbox column header -->
-				
 			</th>
 			<th>
 				Name
