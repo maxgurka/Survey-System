@@ -20,6 +20,7 @@ namespace Tengella.Survey.Data.Models
 		public required string Identifier { get; set; }
 		[JsonIgnore]
         public virtual ICollection<Respondent>? Respondents { get; set; }
-
-    }
+		[JsonIgnore]
+		public virtual ICollection<RecipientList>? RecipientLists { get; set; }
+	}
 }

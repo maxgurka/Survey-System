@@ -12,8 +12,9 @@ public class SurveyDbContext : DbContext
     public DbSet<Models.Respondent> Respondents { get; set; }
     public DbSet<Models.Response> Responses { get; set; }
     public DbSet<Models.Recipient> Recipients { get; set; }
+	public DbSet<Models.RecipientList> RecipientLists { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Models.Survey>()
             .HasMany(s => s.Questions)
@@ -45,6 +46,6 @@ public class SurveyDbContext : DbContext
             .WithOne(r => r.Recipient)
             .OnDelete(DeleteBehavior.SetNull);
 
-        base.OnModelCreating(modelBuilder);
+		base.OnModelCreating(modelBuilder);
     }
 }

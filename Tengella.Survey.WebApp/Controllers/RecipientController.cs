@@ -16,12 +16,36 @@ namespace Tengella.Survey.WebApp.Controllers
 		}
 
 		/// <summary>
-		/// View for listing all recipients
+		/// View for listing recipients
 		/// </summary>
-		public IActionResult List()
+		/// <param name="id">Optional RecipientList id for filtering</param>
+		/// <returns></returns>
+		public IActionResult List(int? id)
 		{
-			IEnumerable<Data.Models.Recipient> recipientList = _surveyDbcontext.Recipients;
-			return View(recipientList);
+			ViewBag.RecipientLists = _surveyDbcontext.RecipientLists.ToList();
+			IEnumerable<Recipient> recipients;
+
+			// Filtering by list id
+			if (id != null)
+			{
+				// Get the recipientList
+				RecipientList? recipientList = _surveyDbcontext.RecipientLists
+					.Include(r => r.Recipients)
+					.SingleOrDefault(r => r.Id == id);
+
+				if (recipientList == null)
+				{
+					return NotFound();
+				}
+
+				// Get recipients in list
+				recipients = recipientList.Recipients.ToList();
+			}
+			else
+			{
+				recipients = _surveyDbcontext.Recipients.ToList();
+			}
+			return View(recipients);
 		}
 
 		/// <summary>
@@ -32,7 +56,7 @@ namespace Tengella.Survey.WebApp.Controllers
 		public IActionResult Info(int id)
 		{
 			Recipient recipient = _surveyDbcontext.Recipients.Include(r => r.Respondents).Single(r => r.Id == id);
-			if(recipient != null)
+			if (recipient != null)
 			{
 				return View(recipient);
 			}
@@ -54,19 +78,19 @@ namespace Tengella.Survey.WebApp.Controllers
 		/// Takes a recipient with POST and saves it to database
 		/// </summary>
 		/// <param name="recipient">The recipient created by the user</param>
-        [HttpPost]
-        public IActionResult Create(Recipient recipient)
-        {
-            if (ModelState.IsValid)
-            {
-                _surveyDbcontext.Add(recipient);
-                _surveyDbcontext.SaveChanges();
+		[HttpPost]
+		public IActionResult Create(Recipient recipient)
+		{
+			if (ModelState.IsValid)
+			{
+				_surveyDbcontext.Add(recipient);
+				_surveyDbcontext.SaveChanges();
 
-                return RedirectToAction("List", "Recipient");
-            }
+				return RedirectToAction("List", "Recipient");
+			}
 
-            return View(recipient);
-        }
+			return View(recipient);
+		}
 
 		/// <summary>
 		/// Update a recipient
@@ -92,15 +116,28 @@ namespace Tengella.Survey.WebApp.Controllers
 		[HttpPost]
 		public IActionResult Delete(Recipient recipient)
 		{
-			if (recipient != null)
+			if (recipient == null)
 			{
-				_surveyDbcontext.Recipients.Remove(recipient);
-				_surveyDbcontext.SaveChanges();
+				return BadRequest();
 			}
-			else
-			{
-				
-			}
+
+			_surveyDbcontext.Recipients.Remove(recipient);
+			_surveyDbcontext.SaveChanges();
+
+			return RedirectToAction("List", "Recipient");
+		}
+
+		/// <summary>
+		/// Creating a new recipient list
+		/// </summary>
+		/// <param name="listName">The name for the list</param>
+		[HttpPost]
+		public IActionResult CreateRecipientList(string listName)
+		{
+			RecipientList recipientList = new() { Name = listName };
+
+			_surveyDbcontext.Add(recipientList);
+			_surveyDbcontext.SaveChanges();
 
 			return RedirectToAction("List", "Recipient");
 		}
