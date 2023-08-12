@@ -49,6 +49,7 @@
 @section Scripts {
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
+		// Give necessary values to js
 		var surveyId = @Model.Id;
 		@if (ViewData.ContainsKey("UserId"))
 		{
@@ -56,5 +57,5 @@
 			@:console.log(userId);
 		}
 	</script>
-	<script src="~/js/Views/Take.js"></script>
+	<script src="~/js/Views/Survey/Take.js"></script>
 }

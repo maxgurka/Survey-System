@@ -143,16 +143,16 @@ namespace Tengella.Survey.WebApp.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult AddToList(int selectedDropdownValue, List<int> selectedRecipientIds)
+		public IActionResult AddToList(int listId, List<int> recipientIds)
 		{
-			RecipientList? list = _surveyDbcontext.RecipientLists.SingleOrDefault(r => r.Id == selectedDropdownValue);
+			RecipientList? list = _surveyDbcontext.RecipientLists.Include(r => r.Recipients).SingleOrDefault(r => r.Id == listId);
 
 			if(list == null)
 			{
 				return NotFound();
 			}
 
-			foreach (int id in selectedRecipientIds)
+			foreach (int id in recipientIds)
 			{
 				Recipient? recipient = _surveyDbcontext.Recipients.SingleOrDefault(r => r.Id == id);
 				if (recipient == null)
@@ -164,7 +164,7 @@ namespace Tengella.Survey.WebApp.Controllers
 			_surveyDbcontext.SaveChanges();
 
 			// Return a response to the client
-			return Json(new { success = true });
+			return RedirectToAction("List", "Recipient");
 		}
 	}
 }

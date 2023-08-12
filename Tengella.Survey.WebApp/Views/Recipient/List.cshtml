@@ -19,9 +19,9 @@
 		</div>
 
 		<!-- Text Field with Form and Bootstrap Button -->
-		<form id="createListForm" asp-action="CreateRecipientList" asp-controller="Recipient" method="post">
+		<form id="createListForm" asp-action="CreateRecipientList" asp-controller="Recipient" method="post" style="min-width: 220px;">
 			<div class="input-group">
-				<input type="text" name="listName" class="form-control" placeholder="Email list name" style="max-width: 150px;">
+				<input type="text" name="listName" class="form-control" placeholder="Email list name">
 				<button class="btn btn-primary" type="submit">Create</button>
 			</div>
 		</form>
@@ -85,104 +85,5 @@
 	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 	<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 	<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-	<script>
-		var anyCheckboxChecked = false;
-		var selectedDropdownValue;
-
-		var dataTable = $('#recipient-table').DataTable({
-			language: {
-				searchPlaceholder: "Search", 
-				search: "" // Placeholder instead of label
-			},
-			columnDefs: [
-				{
-					targets: -1,
-					orderable: false, //Disable sorting for last column
-					className: 'dt-body-center',
-					width: '1' // Small width makes the column width fit content
-				},
-				{
-					targets: 0,
-					orderable: false, //Disable sorting for first column
-					className: 'dt-body-center',
-					width: '1'
-				}
-			],
-			order: [[1, 'asc']]
-		});
-
-		// Checkbox event handler
-		$('.rowCheckbox').on('change', function updateDropdownButtonState() {
-			anyCheckboxChecked = $('.rowCheckbox:checked').length > 0;
-
-			if (anyCheckboxChecked) {
-				$('#clearButton').removeClass('btn-primary').addClass('btn-secondary').text('Add');
-			} else {
-				$('#clearButton').removeClass('btn-secondary').addClass('btn-primary').text('Clear');
-			}
-		});
-
-		// Prevent form submission if input is empty
-		$("#createListForm").on("submit", function (event) {
-			if ($("input[name='listName']").val().trim() === "") {
-				event.preventDefault();
-			}
-		});
-
-		// Choosing a list from the dropdown
-		$("#recipientListDropdown").on("change", function () {
-
-			selectedDropdownValue = $(this).val();
-
-			if ($(this).val() !== "") {
-				if (!anyCheckboxChecked){
-					// Redirect to the List action with the selected ID in the URL
-					window.location.href = "/Recipient/List/" + $(this).val();
-				}
-			}
-		});
-
-		// Get ids of the recipients whose checkboxes has been checked
-		function getSelectedRecipientIds() {
-			var selectedIds = [];
-			$('.rowCheckbox:checked').each(function () {
-				selectedIds.push($(this).val());
-			});
-			return selectedIds;
-		}
-
-		// Clear button
-		$("#clearButton").on("click", function () {
-
-			if (anyCheckboxChecked){
-				var listId = parseInt(selectedDropdownValue);
-				var selectedRecipientIds = getSelectedRecipientIds();
-				console.log(selectedRecipientIds);
-				console.log(selectedDropdownValue);
-
-				// Use the listId and selectedRecipientIds to make an AJAX request
-				$.ajax({
-					url: "/Recipient/AddToList",
-					type: "POST",
-					data: {
-						selectedDropdownValue: listId,
-						selectedRecipientIds: selectedRecipientIds
-					},
-					success: function (data) {
-						console.log(data);
-						// Handle the server response if needed
-						// For example, you could refresh the page or display a success message
-					},
-					error: function (error) {
-						// Handle the error if needed
-					}
-				});
-				}
-			}
-			else{
-				// Redirect to the List action without any ID
-				window.location.href = "/Recipient/List";
-			}
-		});
-	</script>
+	<script src="~/js/Views/Recipient/List.js"></script>
 }
