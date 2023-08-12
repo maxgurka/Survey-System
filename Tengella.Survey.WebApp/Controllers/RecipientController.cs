@@ -141,5 +141,30 @@ namespace Tengella.Survey.WebApp.Controllers
 
 			return RedirectToAction("List", "Recipient");
 		}
+
+		[HttpPost]
+		public IActionResult AddToList(int selectedDropdownValue, List<int> selectedRecipientIds)
+		{
+			RecipientList? list = _surveyDbcontext.RecipientLists.SingleOrDefault(r => r.Id == selectedDropdownValue);
+
+			if(list == null)
+			{
+				return NotFound();
+			}
+
+			foreach (int id in selectedRecipientIds)
+			{
+				Recipient? recipient = _surveyDbcontext.Recipients.SingleOrDefault(r => r.Id == id);
+				if (recipient == null)
+				{
+					return NotFound();
+				}
+				list.Recipients!.Add(recipient);
+			}
+			_surveyDbcontext.SaveChanges();
+
+			// Return a response to the client
+			return Json(new { success = true });
+		}
 	}
 }

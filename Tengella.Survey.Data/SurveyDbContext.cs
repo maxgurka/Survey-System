@@ -7,12 +7,12 @@ public class SurveyDbContext : DbContext
 {
     public SurveyDbContext(DbContextOptions<SurveyDbContext> options) : base(options) { }
     public DbSet<Models.Survey> Surveys { get; set; }
-    public DbSet<Models.Question> Questions { get; set; }
-    public DbSet<Models.Answer> Answers { get; set; }
-    public DbSet<Models.Respondent> Respondents { get; set; }
-    public DbSet<Models.Response> Responses { get; set; }
-    public DbSet<Models.Recipient> Recipients { get; set; }
-	public DbSet<Models.RecipientList> RecipientLists { get; set; }
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<Answer> Answers { get; set; }
+    public DbSet<Respondent> Respondents { get; set; }
+    public DbSet<Response> Responses { get; set; }
+    public DbSet<Recipient> Recipients { get; set; }
+	public DbSet<RecipientList> RecipientLists { get; set; }
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
