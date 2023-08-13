@@ -7,6 +7,7 @@ using System.Globalization;
 using Tengella.Survey.Data;
 using Tengella.Survey.Data.Migrations;
 using Tengella.Survey.Data.Models;
+using Tengella.Survey.WebApp.FileProcessing;
 using Tengella.Survey.WebApp.Mapping;
 
 namespace Tengella.Survey.WebApp.Controllers
@@ -168,10 +169,13 @@ namespace Tengella.Survey.WebApp.Controllers
 			}
 			_surveyDbcontext.SaveChanges();
 
-			// Return a response to the client
 			return RedirectToAction("List", "Recipient");
 		}
 
+		/// <summary>
+		/// Add one or more recipients from a file
+		/// </summary>
+		/// <param name="file">A CSV or an excel file</param>
 		[HttpPost]
 		public IActionResult AddFromFile(IFormFile file)
 		{
@@ -180,15 +184,9 @@ namespace Tengella.Survey.WebApp.Controllers
 				var recipients = new List<Recipient>();
 
 				using (var streamReader = new StreamReader(file.OpenReadStream()))
-				using (var csvReader = new CsvReader(streamReader, new CsvConfiguration(CultureInfo.InvariantCulture)
 				{
-					HasHeaderRecord = true, // Specify that the CSV file has a header row
-					HeaderValidated = null, // Ignore header validation
-					MissingFieldFound = null, // Ignore missing fields
-				}))
-				{
-					csvReader.Context.RegisterClassMap<RecipientMap>();
-					recipients = csvReader.GetRecords<Recipient>().ToList();
+					var fileType = Path.GetExtension(file.FileName);
+					recipients = FileProcessorFactory.ProcessFile(streamReader.BaseStream, fileType);
 				}
 
 				if (recipients.Any())
