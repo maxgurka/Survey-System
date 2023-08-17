@@ -1,5 +1,11 @@
 # Survey-System
-ASP.NET (MVC) solution for the creation and distribution of online surveys
+ASP.NET (MVC) solution for the creation and distribution of online surveys.
+	- Create surveys with multiple-choice and/or free-text questions
+  	- Copy existing surveys to use them as templates
+   	- View charts with response statisctics
+    	- Add survey recipents manually or by loading a *.csv* or *.xlsx* files
+     	- Create email lists with recipients
+      	- Mass send emails with personalized survey links
 ## Setup
 Feel free to use whatever editors/IDEs.
 However we strongly recommend *Visual Studio*.
