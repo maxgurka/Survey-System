@@ -7,6 +7,7 @@ ASP.NET (MVC) solution for the creation and distribution of online surveys.
 - Add survey recipents manually or by loading a *.csv* or *.xlsx* files
 - Create email lists with recipients
 - Mass send emails with personalized survey links
+- Survey responses are anonymous when a non-personalized link is used
 ## Setup
 Feel free to use whatever editors/IDEs.
 However we strongly recommend *Visual Studio*.
